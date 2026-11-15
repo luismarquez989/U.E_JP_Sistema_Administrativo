@@ -1,0 +1,1520 @@
+/* Estilos generales y estructura base */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #f8fafc;
+  color: #334155;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main.main-content {
+  flex: 1 0 auto;
+}
+
+.footer-custom {
+  background-color: #ffffff;
+  border-top: 1px solid #e2e8f0;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.card-custom {
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  background-color: #ffffff;
+}
+
+.login-wrapper {
+  max-width: 420px;
+  width: 100%;
+  margin: 28px auto 0 auto;
+}
+
+.login-logo-img {
+  width: 145px;
+  max-width: 48%;
+  height: auto;
+  display: inline-block;
+  mix-blend-mode: multiply;
+  user-select: none;
+}
+
+.login-card {
+  width: 100%;
+  margin: 0;
+}
+
+/* Barra de navegacion institucional */
+.navbar-custom {
+  background-color: #1e293b;
+}
+
+.navbar-brand-fixed {
+  white-space: nowrap !important;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  color: #ffffff !important;
+}
+
+.navbar-left-group {
+  max-width: calc(100% - 60px);
+}
+
+@media (min-width: 992px) {
+  .navbar-left-group {
+    max-width: none;
+  }
+}
+
+.navbar-user-box {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-user-divider {
+  display: inline-block;
+  width: 1px;
+  height: 18px;
+  background-color: rgba(255, 255, 255, 0.25);
+  margin: 0 14px;
+}
+
+.navbar-user-chip {
+  color: #f1f5f9;
+  font-weight: 500;
+  font-size: 0.88rem;
+  background-color: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 6px;
+  padding: 3px 10px;
+  display: inline-block;
+  max-width: 320px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+@media (max-width: 991.98px) {
+  .navbar-user-chip {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    font-size: 0.82rem;
+    color: #94a3b8;
+    max-width: 100%;
+  }
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .nav-link {
+  color: #f8fafc !important;
+}
+
+.navbar-custom .nav-link:hover {
+  color: #38bdf8 !important;
+}
+
+.navbar-custom .navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.navbar-custom .navbar-toggler:focus {
+  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
+}
+
+.navbar-custom .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
+
+/* Formularios, buscador y controles de filtro */
+.input-nacionalidad-select {
+  max-width: 78px;
+}
+
+.search-filter-container {
+  border-radius: 0.5rem;
+}
+
+.search-filter-container .input-group {
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  border: 1px solid #cbd5e1;
+  overflow: hidden;
+}
+
+.search-filter-container .form-control,
+.search-filter-container .form-control:focus {
+  border: none;
+  box-shadow: none !important;
+}
+
+.search-filter-container .input-group-text {
+  border: none;
+  background-color: #ffffff;
+}
+
+.clear-search-btn {
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  box-shadow: none !important;
+}
+
+.clear-search-btn:hover {
+  color: #64748b;
+}
+
+.btn-filter-pill {
+  border: none;
+  border-left: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #334155;
+  transition: background-color 0.15s ease;
+}
+
+.btn-filter-pill:hover,
+.btn-filter-pill:focus {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.filter-chip-close {
+  font-size: 0.65rem;
+}
+
+.personal-list-title {
+  font-size: 1.15rem;
+}
+
+.personal-list-badge {
+  font-size: 0.8rem;
+}
+
+/* estilos del modulo de personal y tajetas de expediente */
+.personal-row-hover {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border-radius: 10px;
+  min-height: 92px;
+}
+
+.personal-row-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+}
+
+.personal-card-inactivo .personal-row-hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1 !important;
+  opacity: 0.85;
+}
+
+.personal-card-inactivo .avatar-list-img {
+  filter: grayscale(80%);
+  opacity: 0.85;
+}
+
+.personal-card-inactivo .avatar-list-placeholder {
+  background-color: #e2e8f0 !important;
+  color: #64748b !important;
+}
+
+.avatar-list-img,
+.print-profile-avatar-img,
+.print-doc-profile-avatar-img {
+  width: 58px !important;
+  height: 58px !important;
+  max-width: 58px !important;
+  max-height: 58px !important;
+  object-fit: cover !important;
+}
+
+.avatar-list-placeholder {
+  width: 58px !important;
+  height: 58px !important;
+  font-size: 1.3rem !important;
+}
+
+.profile-view-avatar-img,
+.modal-avatar-preview {
+  width: 110px !important;
+  height: 110px !important;
+  max-width: 110px !important;
+  max-height: 110px !important;
+  object-fit: cover !important;
+}
+
+.profile-view-avatar-placeholder,
+.modal-avatar-placeholder {
+  width: 110px !important;
+  height: 110px !important;
+  font-size: 2.5rem !important;
+}
+
+.badge-condicion-list {
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.btn-popover-condicion {
+  text-decoration: none;
+  box-shadow: none !important;
+}
+
+@media (min-width: 768px) {
+  .border-start-md {
+    border-left: 1px solid #dee2e6;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .border-start-md {
+    border-left: none;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 1.15rem;
+    margin-top: 0.85rem;
+  }
+
+  .profile-view-avatar-img,
+  .profile-view-avatar-placeholder {
+    width: 88px !important;
+    height: 88px !important;
+    max-width: 88px !important;
+    max-height: 88px !important;
+    font-size: 2rem !important;
+  }
+}
+
+/* tarjetas de documentos del expediente */
+.expediente-card-item {
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.15s ease;
+}
+
+.expediente-card-item:hover {
+  transform: translateY(-2px);
+}
+
+.exp-preview-container {
+  height: 145px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.exp-pdf-label {
+  font-size: 0.8rem;
+}
+
+.btn-xs-pdf,
+.btn-xs-descarga,
+.exp-desc-label {
+  font-size: 0.78rem;
+}
+
+.doc-preview-img {
+  max-height: 135px;
+  max-width: 100%;
+  object-fit: contain;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.doc-preview-img:hover {
+  opacity: 0.92;
+}
+
+.exp-img-thumbnail {
+  max-height: 98px;
+  max-width: 100%;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.exp-desc-container {
+  min-height: 42px;
+}
+
+.exp-desc-text {
+  font-size: 0.82rem;
+}
+
+.exp-date-meta {
+  font-size: 0.75rem;
+}
+
+.badge-exp-status {
+  font-size: 0.74rem;
+}
+
+/* Modales del sistema */
+.modal {
+  overflow-x: hidden !important;
+}
+
+.modal-dialog.modal-dialog-centered {
+  display: flex !important;
+  align-items: center !important;
+  min-height: calc(100% - 3.5rem) !important;
+}
+
+.modal-dialog-scrollable {
+  max-height: calc(100vh - 2rem);
+}
+
+.modal-dialog-scrollable .modal-content,
+form.modal-content,
+.modal-content {
+  max-height: calc(100vh - 2rem);
+  display: flex;
+  flex-direction: column;
+  max-width: 100% !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+}
+
+.modal-body {
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  word-break: break-word;
+}
+
+.modal-body-scrollable {
+  max-height: calc(85vh - 120px);
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100% !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.modal-body .table-responsive {
+  max-width: 100% !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  display: block !important;
+}
+
+.modal-preview-doc-img {
+  max-height: 180px;
+  object-fit: contain;
+}
+
+.modal-zoom-img {
+  max-height: 80vh;
+  object-fit: contain;
+}
+
+.modal-download-icon-box {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+}
+
+/* === Modulo de Usaurios y Bitacora de Auditoria === */
+.user-table-list {
+  min-width: 720px;
+}
+
+.user-table-list td {
+  vertical-align: middle !important;
+}
+
+.badge-role-pill,
+.badge-status-pill {
+  width: 136px;
+  min-width: 136px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.36rem 0.6rem;
+  border-radius: 50rem;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.badge-role-admin-mayor {
+  background-color: #6366f1;
+  color: #ffffff;
+}
+
+.badge-role-admin {
+  background-color: #f59e0b;
+  color: #1e293b;
+}
+
+.badge-role-regular {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+}
+
+.badge-status-online {
+  background-color: #ecfdf5;
+  color: #059669;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-status-offline {
+  background-color: #f8fafc;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+}
+
+.badge-tu {
+  font-size: 0.72rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+.user-table-nombre {
+  max-width: 260px;
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.user-col-num {
+  width: 48px;
+}
+
+.user-col-cedula {
+  width: 130px;
+  white-space: nowrap !important;
+}
+
+.user-col-rol,
+.user-col-conexion {
+  width: 155px;
+}
+
+.user-col-acciones {
+  width: 170px;
+  white-space: nowrap !important;
+}
+
+.user-actions-cell {
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+}
+
+.user-actions-cell .btn-group {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+}
+
+.user-actions-cell .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 31px !important;
+  max-height: 31px !important;
+  min-height: 31px !important;
+  line-height: 1;
+  padding: 0.25rem 0.65rem;
+  box-sizing: border-box;
+}
+
+.audit-table {
+  min-width: 620px;
+}
+
+.audit-col-fecha {
+  width: 165px;
+}
+
+.audit-col-usuario {
+  width: 210px;
+}
+
+.audit-col-ip {
+  width: 125px;
+}
+
+.audit-user-truncate {
+  max-width: 200px;
+}
+
+.audit-select-periodo {
+  width: auto;
+  min-width: 120px;
+  cursor: pointer;
+}
+
+.audit-select-orden {
+  width: auto;
+  min-width: 130px;
+  cursor: pointer;
+}
+
+/* Modulo de actas de graduacion */
+.acta-offscreen-capture-wrapper {
+  position: fixed;
+  left: -99999px;
+  top: 0;
+  width: 820px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -9999;
+}
+
+.acta-preview-frame {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.acta-sheet-view,
+.acta-sheet-container {
+  background-color: #ffffff;
+  color: #000000;
+  padding: 24px 28px;
+  width: 800px;
+  max-width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
+
+.acta-print-top-bar {
+  font-size: 0.82rem;
+  color: #000000;
+  border-bottom: 1.5px solid #000000;
+  padding-bottom: 0.45rem;
+  margin-bottom: 1.25rem;
+  width: 100%;
+}
+
+.acta-digital-header {
+  margin-bottom: 1.25rem;
+  color: #000000;
+  text-align: center;
+  width: 100%;
+}
+
+.acta-digital-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 0.2rem;
+  letter-spacing: 0.02em;
+}
+
+.acta-digital-subtitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #000000;
+  margin-bottom: 0;
+}
+
+.acta-digital-table-wrap {
+  width: 100%;
+}
+
+.acta-digital-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 2px solid #000000;
+  color: #000000;
+  background-color: #ffffff;
+  font-size: 0.9rem;
+  table-layout: fixed;
+}
+
+.acta-digital-table th,
+.acta-digital-table td {
+  border: 1px solid #000000;
+  padding: 0.4rem 0.5rem;
+  vertical-align: middle;
+  color: #000000;
+  background-color: #ffffff;
+}
+
+.acta-digital-table thead th {
+  font-weight: 700;
+  text-align: center;
+  border-bottom: 1.5px solid #000000;
+}
+
+.acta-nomina-table {
+  min-width: 640px;
+}
+
+.acta-form-table {
+  min-width: 680px;
+}
+
+.acta-col-num {
+  width: 6%;
+  text-align: center;
+}
+
+.acta-col-nombre {
+  width: 36%;
+}
+
+.acta-col-ci {
+  width: 15%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.acta-col-fn-group {
+  width: 19%;
+  text-align: center;
+}
+
+.acta-col-fn-part {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.acta-col-fn-d,
+.acta-col-fn-m {
+  width: 5%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.acta-col-fn-a {
+  width: 9%;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.acta-col-literal {
+  width: 9%;
+  text-align: center;
+}
+
+.acta-col-obs {
+  width: 15%;
+  text-align: center;
+}
+
+.acta-col-del {
+  width: 5%;
+  text-align: center;
+}
+
+.acta-cell-nombre {
+  font-weight: 500;
+}
+
+.acta-th-sub {
+  font-size: 0.76rem;
+  font-weight: 600;
+  display: block;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+.acta-alert-close-btn {
+  font-size: 0.8rem;
+  line-height: 1;
+  opacity: 0.65;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.acta-alert-close-btn:hover {
+  opacity: 1;
+  color: #000000;
+}
+
+.acta-form-table input[type="number"]::-webkit-outer-spin-button,
+.acta-form-table input[type="number"]::-webkit-inner-spin-button,
+input.acta-no-spin::-webkit-outer-spin-button,
+input.acta-no-spin::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.acta-form-table input[type="number"],
+input.acta-no-spin {
+  appearance: textfield;
+}
+
+.acta-form-table td {
+  padding: 0.25rem 0.35rem;
+}
+
+.acta-form-table .inp-dia,
+.acta-form-table .inp-mes {
+  min-width: 48px;
+}
+
+.acta-form-table .inp-anio {
+  min-width: 68px;
+}
+
+.acta-anio-input-box {
+  max-width: 340px;
+  width: 100%;
+}
+
+.acta-empty-hint {
+  max-width: 560px;
+}
+
+.acta-edit-thumb {
+  height: 100px;
+  width: 100%;
+  object-fit: cover;
+  border: 1px solid #000000;
+}
+
+.acta-book-img-frame {
+  border: 1.5px solid #000000;
+  padding: 0.5rem;
+  background-color: #ffffff;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.acta-loading-skeleton-box {
+  max-width: 480px;
+}
+
+.acta-skeleton-line {
+  height: 14px;
+  background: linear-gradient(90deg, #e9ecef 25%, #dee2e6 50%, #e9ecef 75%);
+  background-size: 200% 100%;
+  animation: actaSkeletonPulse 1.2s infinite ease-in-out;
+  border: 1px solid #adb5bd;
+}
+
+@keyframes actaSkeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* vista de impresion y exportacion a pdf */
+body.expediente-print-body {
+  background-color: #e2e8f0;
+  color: #1e293b;
+  margin: 0;
+  padding: 0;
+}
+
+.toolbar-top {
+  background-color: #1e293b;
+  color: #f8fafc;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.sheet-container {
+  width: 740px;
+  max-width: 100%;
+  height: 986px;
+  max-height: 986px;
+  margin: 20px auto;
+  background: #ffffff;
+  padding: 20px 24px;
+  box-shadow: none;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.print-sheet-expediente {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+.html2pdf__container {
+  position: relative !important;
+  left: 0 !important;
+  right: auto !important;
+  top: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 740px !important;
+  min-width: 740px !important;
+  max-width: 740px !important;
+  box-sizing: border-box !important;
+}
+
+.html2pdf__container .sheet-container-wrapper {
+  width: 740px !important;
+  min-width: 740px !important;
+  max-width: 740px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+.html2pdf__container .sheet-container {
+  margin: 0 auto !important;
+  width: 740px !important;
+  max-width: 740px !important;
+  height: 986px !important;
+  max-height: 986px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  overflow: hidden !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.html2pdf__container .acta-sheet-container {
+  width: 740px !important;
+  max-width: 740px !important;
+  height: auto !important;
+  max-height: none !important;
+  justify-content: flex-start !important;
+  padding: 20px 24px !important;
+  margin: 0 auto !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  overflow: visible !important;
+  box-sizing: border-box !important;
+}
+
+.html2pdf__container .acta-digital-table-wrap {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+.html2pdf__container .acta-digital-table {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  table-layout: fixed !important;
+}
+
+.html2pdf__container .sheet-container .doc-img-container {
+  flex: 1 1 0px !important;
+  min-height: 180px !important;
+  height: auto !important;
+  max-height: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+}
+
+.html2pdf__container .sheet-container .doc-img-container img {
+  max-height: 100% !important;
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: auto !important;
+}
+
+.html2pdf__container .acta-digital-table th,
+.html2pdf__container .acta-digital-table td {
+  padding: 4px 6px !important;
+  font-size: 9pt !important;
+  line-height: 1.25 !important;
+}
+
+.html2pdf__container .acta-page-continuacion {
+  margin-top: 0 !important;
+}
+
+.html2pdf__container .print-col-6 {
+  width: 50% !important;
+  flex: 0 0 50% !important;
+}
+
+.header-print {
+  font-size: 0.82rem;
+  color: #1e293b;
+  border-bottom: 1px solid #cbd5e1;
+  padding-bottom: 6px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.profile-box {
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 10px 14px;
+  background-color: #ffffff;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.print-profile-avatar-placeholder,
+.print-doc-profile-avatar-placeholder {
+  width: 58px !important;
+  height: 58px !important;
+  font-size: 1.2rem !important;
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+  border: 1px solid #cbd5e1 !important;
+}
+
+.doc-title {
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #0f172a;
+  text-align: center;
+  margin: 4px 0 10px 0;
+  flex-shrink: 0;
+}
+
+.doc-img-container {
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  padding: 8px;
+  background-color: #ffffff;
+  text-align: center;
+  margin-bottom: 10px;
+  flex: 1 1 0px;
+  min-height: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.doc-img-container img,
+.print-doc-main-img {
+  max-height: 100% !important;
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+  margin: auto !important;
+}
+
+.doc-desc-box {
+  border-left: 3px solid #0f172a;
+  background-color: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  border-radius: 0 4px 4px 0;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+  max-height: 100px;
+  overflow: hidden;
+}
+
+.doc-desc-text-print,
+.print-doc-desc-text {
+  white-space: pre-line;
+  line-height: 1.38;
+  font-size: 0.86rem;
+  color: #0f172a;
+}
+
+.footer-vencimiento {
+  text-align: right;
+  font-size: 0.82rem;
+  color: #0f172a;
+  border-top: 1px solid #cbd5e1;
+  padding-top: 6px;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.html2pdf__page-break {
+  page-break-after: always !important;
+  break-after: page !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  display: block !important;
+}
+
+.acta-page-continuacion {
+  margin-top: 25px !important;
+}
+
+@media screen {
+  #documentoImpresionExpediente,
+  .print-sheet-expediente,
+  #printDirectTablaWrap,
+  #printDirectImagenWrap {
+    display: none !important;
+    visibility: hidden !important;
+    position: fixed !important;
+    left: -99999px !important;
+    top: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+}
+
+/* Adaptacion responsiva para moviles y pantallas pequenas hasta 320x656 */
+@media (max-width: 767.98px) {
+  .user-table-nombre {
+    max-width: 165px;
+  }
+
+  .toolbar-top {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 8px 12px;
+  }
+
+  .expediente-print-body {
+    background-color: #f1f5f9;
+    padding-bottom: 2rem;
+  }
+
+  .sheet-container {
+    height: auto !important;
+    max-height: none !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    padding: 16px 14px !important;
+    margin: 12px auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 8px;
+  }
+
+  .sheet-container .profile-box {
+    padding: 12px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .sheet-container .doc-title {
+    font-size: 1.15rem !important;
+    margin: 10px 0 !important;
+  }
+
+  .sheet-container .doc-img-container {
+    height: auto !important;
+    min-height: 160px !important;
+    max-height: 380px !important;
+    padding: 6px !important;
+  }
+
+  .sheet-container .doc-img-container img {
+    max-height: 360px !important;
+    object-fit: contain;
+  }
+
+  .sheet-container .footer-vencimiento {
+    font-size: 0.78rem !important;
+    margin-top: 12px !important;
+  }
+
+  .acta-digital-table-wrap {
+    width: 100%;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .acta-digital-table {
+    min-width: 620px;
+  }
+
+  /* Logs responsive tipo tarjeta */
+  .audit-table,
+  .audit-table thead,
+  .audit-table tbody,
+  .audit-table tr,
+  .audit-table td {
+    display: block;
+    width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+
+  .audit-table thead {
+    display: none !important;
+  }
+
+  .audit-table tr {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    margin-bottom: 0.65rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .audit-table td {
+    padding: 0.2rem 0 !important;
+    border: none !important;
+    white-space: normal !important;
+  }
+
+  .audit-col-fecha,
+  .audit-col-usuario,
+  .audit-col-ip {
+    width: 100% !important;
+  }
+
+  .audit-user-truncate {
+    max-width: 100% !important;
+    white-space: normal !important;
+    display: inline !important;
+  }
+
+  .audit-cell-fecha {
+    font-size: 0.75rem;
+    color: #64748b;
+  }
+
+  .audit-cell-user {
+    font-size: 0.9rem;
+    color: #0f172a;
+    font-weight: 700;
+  }
+
+  .audit-cell-action {
+    font-size: 0.85rem;
+    color: #334155;
+    margin: 0.2rem 0;
+    line-height: 1.35;
+  }
+
+  .audit-cell-ip {
+    font-size: 0.75rem;
+    color: #94a3b8;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .login-wrapper {
+    margin: 14px auto 0 auto;
+  }
+
+  .login-logo-img {
+    width: 112px;
+  }
+
+  .personal-list-title {
+    font-size: 1rem;
+  }
+
+  .personal-list-badge {
+    font-size: 0.75rem;
+  }
+
+  .modal-dialog {
+    margin: 0.5rem auto !important;
+    max-width: calc(100vw - 1rem) !important;
+    width: calc(100vw - 1rem) !important;
+  }
+
+  .modal-dialog.modal-dialog-centered {
+    min-height: calc(100% - 1rem) !important;
+  }
+
+  .modal-header {
+    padding: 0.75rem 0.85rem !important;
+  }
+
+  .modal-title {
+    font-size: 1rem !important;
+    line-height: 1.3 !important;
+  }
+
+  .modal-footer {
+    padding: 0.65rem 0.75rem !important;
+    flex-wrap: wrap !important;
+    gap: 0.5rem !important;
+  }
+
+  .modal-footer > * {
+    margin: 0 !important;
+    flex: 1 1 auto;
+  }
+
+  .modal-download-icon-box {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+  }
+
+  .modal-dialog-scrollable,
+  .modal-dialog-scrollable .modal-content,
+  form.modal-content {
+    max-height: calc(100vh - 1rem);
+  }
+
+  .modal-body-scrollable {
+    max-height: calc(100vh - 140px);
+    padding: 0.85rem !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .login-wrapper {
+    margin: 8px auto 0 auto;
+  }
+
+  .login-logo-img {
+    width: 96px;
+  }
+
+  .navbar-brand-fixed {
+    font-size: 0.96rem;
+  }
+
+  .navbar-left-group {
+    max-width: calc(100% - 48px);
+  }
+
+  .navbar-custom .navbar-toggler {
+    padding: 0.2rem 0.45rem;
+    font-size: 0.95rem;
+  }
+
+  .search-filter-container .form-control {
+    font-size: 0.85rem;
+    padding-top: 0.4rem !important;
+    padding-bottom: 0.4rem !important;
+  }
+
+  .btn-filter-pill {
+    padding-left: 0.55rem !important;
+    padding-right: 0.55rem !important;
+    font-size: 0.82rem;
+  }
+
+  .avatar-list-img,
+  .avatar-list-placeholder {
+    width: 46px !important;
+    height: 46px !important;
+    max-width: 46px !important;
+    max-height: 46px !important;
+    font-size: 1.05rem !important;
+  }
+
+  .personal-card-item .btn-group > .btn {
+    font-size: 0.76rem;
+    padding: 0.25rem 0.4rem;
+  }
+
+  .input-nacionalidad-select {
+    max-width: 64px;
+  }
+}
+
+/* Reglas exclusivas de impresion fisica */
+@media print {
+  @page {
+    size: letter portrait;
+    margin: 8mm 10mm !important;
+  }
+
+  .no-print, .navbar, .modal, .modal-backdrop, .btn, footer {
+    display: none !important;
+  }
+
+  .print-col-6 {
+    width: 50% !important;
+    flex: 0 0 50% !important;
+  }
+
+  body, body.expediente-print-body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  body.imprimiendo-expediente > *:not(#documentoImpresionExpediente) {
+    display: none !important;
+  }
+
+  body.imprimiendo-expediente #documentoImpresionExpediente {
+    display: block !important;
+    position: static !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    visibility: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+  }
+
+  body.imprimiendo-expediente #documentoImpresionExpediente * {
+    visibility: visible !important;
+  }
+
+  body.imprimiendo-expediente #printDirectTablaWrap {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Expediente individual en impresion */
+  body.imprimiendo-expediente .print-sheet-expediente,
+  .expediente-print-body .print-sheet-expediente,
+  .expediente-print-body #sheetContainerPdf.sheet-container:not(.acta-sheet-container) {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    visibility: visible !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: 258mm !important;
+    max-height: 258mm !important;
+    margin: 0 auto !important;
+    padding: 16px 20px !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    overflow: hidden !important;
+  }
+
+  /* Acta de graduacion en impresion (paginas 1, 2, etc.) */
+  body.imprimiendo-expediente .acta-sheet-container,
+  .expediente-print-body .acta-sheet-container {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    visibility: visible !important;
+    position: relative !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: 260mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-sizing: border-box !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    overflow: hidden !important;
+  }
+
+  body.imprimiendo-expediente .acta-sheet-container.acta-page-continuacion,
+  .expediente-print-body .acta-sheet-container.acta-page-continuacion {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  .html2pdf__page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+  }
+
+  body.imprimiendo-expediente .acta-print-top-bar,
+  .acta-print-top-bar {
+    width: 100% !important;
+    border-bottom: 1.5px solid #000000 !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 12px !important;
+  }
+
+  body.imprimiendo-expediente .acta-digital-header,
+  .acta-digital-header {
+    width: 100% !important;
+    text-align: center !important;
+    margin-bottom: 12px !important;
+  }
+
+  body.imprimiendo-expediente .acta-digital-table-wrap,
+  .acta-digital-table-wrap {
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  body.imprimiendo-expediente .acta-digital-table,
+  .acta-digital-table {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    border-collapse: collapse !important;
+    border: 2px solid #000000 !important;
+    table-layout: fixed !important;
+  }
+
+  body.imprimiendo-expediente .acta-digital-table th,
+  body.imprimiendo-expediente .acta-digital-table td,
+  .acta-digital-table th,
+  .acta-digital-table td {
+    border: 1px solid #000000 !important;
+    padding: 4px 6px !important;
+    font-size: 9pt !important;
+    line-height: 1.25 !important;
+    color: #000000 !important;
+  }
+
+  .doc-img-container {
+    flex: 1 1 0px !important;
+    min-height: 0px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+  }
+
+  .doc-img-container img,
+  .print-doc-main-img {
+    max-height: 100% !important;
+    max-width: 100% !important;
+    width: auto !important;
+    height: auto !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin: auto !important;
+  }
+}
