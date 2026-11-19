@@ -17,32 +17,32 @@
 </p>
 
 <p align="center">
-  🌐 <strong>Portal en línea:</strong> <a href="https://uejosefinapimentel.infinityfree.me">https://uejosefinapimentel.infinityfree.me</a> ·
-  📘 <a href="Manual_de_Usuario_UE_Josefina_Pimentel.pdf">Manual de Usuario (PDF)</a>
+  <strong>Portal en línea:</strong> <a href="https://uejosefinapimentel.infinityfree.me">https://uejosefinapimentel.infinityfree.me</a> ·
+  <a href="Manual_de_Usuario_UE_Josefina_Pimentel.pdf">Manual de Usuario (PDF)</a>
 </p>
 
 ---
 
-## 📋 Acerca del Proyecto
+## Acerca del Proyecto
 
 El **Portal Administrativo Digital de la U.E. Josefina Pimentel** es una aplicación web desarrollada bajo el patrón **MVC (Modelo–Vista–Controlador)** en PHP 8 nativo y MySQL. Fue diseñada para modernizar la gestión documental del plantel, protegiendo los libros históricos de graduación y centralizando los expedientes médicos y laborales del personal desde computadoras, tablets y dispositivos móviles.
 
 ---
 
-## ✨ Funcionalidades Principales
+## Funcionalidades Principales
 
-### 🎓 1. Módulo de Actas de Graduación (`/actas`)
+### 1. Módulo de Actas de Graduación (`/actas`)
 * **Registro por Año Escolar:** Creación y edición de actas con numeración correlativa automática (`Acta #1, #2...`) y nómina digital de graduados (Apellidos y Nombres, Cédula, Fecha de Nacimiento, Literal y Observación).
 * **Respaldo Fotográfico del Libro Físico:** Carga de hasta **4 fotografías** originales por acta con visor ampliado (zoom) y descarga en calidad original.
 * **Buscador Inteligente Multicriterio:** Búsqueda por nombre/apellido (insensible a orden, mayúsculas y acentos), cédula, año escolar, fecha de nacimiento o estado del acta (`Activas` / `Inactivas`).
 * **Vista Previa, Impresión y Exportación PDF:** Generación de actas digitales y respaldos fotográficos en formato **Carta** listos para imprimir o guardar en PDF.
 
-### 📁 2. Módulo de Expedientes de Personal y Justificativos Médicos (`/personal`)
+### 2. Módulo de Expedientes de Personal y Justificativos Médicos (`/personal`)
 * **Directorio del Personal:** Registro de personal **Docente, Administrativo, Directivo y Obrero** con foto de perfil, datos de contacto, fecha de nacimiento (`DD-MM-AAAA`), cargo y estado laboral (`Activo` / `Inactivo`).
 * **Alerta de Condición Médica:** Etiqueta visual inmediata en la ficha y listado si el trabajador presenta alguna patología registrada.
 * **Control de Justificativos Médicos y Vencimientos:** Archivo de reposos, justificativos y constancias en formato **Imagen** o **PDF**, con etiquetas automáticas de estado (`Vigente` en verde / `VENCIDO` en rojo), descarga directa e impresión en formato Carta junto con la ficha del trabajador.
 
-### 🛡️ 3. Gestión de Usuarios y Roles (`/usuarios`)
+### 3. Gestión de Usuarios y Roles (`/usuarios`)
 * **Jerarquía de 3 Niveles:**
   * **Admin Mayor:** Control total del sistema; único autorizado para gestionar Administradores y Usuarios Regulares.
   * **Administrador:** Gestión de actas, expedientes, auditoría, cuentas regulares y cambio de su propia contraseña.
@@ -50,13 +50,13 @@ El **Portal Administrativo Digital de la U.E. Josefina Pimentel** es una aplicac
 * **Estado en Tiempo Real:** Indicador `Conectado` / `Desconectado` mediante pulso activo y limpieza automática al cerrar o expirar la sesión.
 * **Confirmación Segura:** Temporizador de seguridad de **5 segundos** antes de eliminar o desactivar registros sensibles.
 
-### 📜 4. Bitácora de Auditoría (`/auditoria`)
+### 4. Bitácora de Auditoría (`/auditoria`)
 * **Logs Inalterables:** Registro automático de solo lectura con fecha y hora oficial de Venezuela (`America/Caracas`, formato `DD-MM-AAAA HH:MM:SS`), usuario responsable, acción detallada e IP de origen.
 * **Filtros Dinámicos (AJAX):** Consulta instantánea por período (`Hoy`, `Semanal`, `Mensual`, `Todos`) y orden (`Ascendente` / `Descendente`) sin recargar la página.
 
 ---
 
-## 🔒 Seguridad y Rendimiento
+## Seguridad y Rendimiento
 
 * **Seguridad:** Contraseñas encriptadas con `Bcrypt` (`password_hash`), protección contra inyección SQL mediante consultas preparadas `PDO`, tokens `CSRF` en formularios, sanitización contra `XSS`, redirección automática a `HTTPS` y páginas controladas de contingencia (`404` y `500`).
 * **Optimización de Imágenes:** Conversión automática a **WebP** y generación de miniaturas (`320px`) conservando los archivos originales para zoom y descarga, carga diferida (`loading="lazy"`), caché HTTP con `ETag` (`304 Not Modified`) y liberación temprana de bloqueo de sesión (`session_write_close`) para descarga en paralelo.
@@ -64,7 +64,7 @@ El **Portal Administrativo Digital de la U.E. Josefina Pimentel** es una aplicac
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 
 * **Backend:** PHP 8 (Arquitectura MVC)
 * **Base de Datos:** MySQL / MariaDB (PDO)
@@ -74,7 +74,7 @@ El **Portal Administrativo Digital de la U.E. Josefina Pimentel** es una aplicac
 
 ---
 
-## 📂 Estructura del Proyecto
+## Estructura del Proyecto
 
 ```text
 josefinapimentel/
@@ -100,7 +100,7 @@ josefinapimentel/
 
 ---
 
-## ⚙️ Instalación Local (XAMPP)
+## Instalación Local (XAMPP)
 
 1. Clona o copia el proyecto dentro de `htdocs`:
    ```bash
@@ -118,7 +118,7 @@ josefinapimentel/
 
 ---
 
-## 👥 Autores
+## Autores
 
 Proyecto desarrollado en la **Universidad Politécnica Territorial del Estado Trujillo "Mario Briceño Iragorry" (UPTTMBI)** para la **Unidad Educativa "Josefina Pimentel"**:
 
