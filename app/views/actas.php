@@ -63,7 +63,7 @@ $csrfToken = Security::generateCSRFToken();
                     <div class="d-flex justify-content-center justify-content-md-start flex-wrap gap-3 mt-2 text-secondary small">
                         <span><i class="bi bi-mortarboard text-primary me-1"></i>Graduados registrados: <strong><?= count($estudiantes) ?></strong></span>
                         <?php if (!empty($actaDetalle['creado_en'])): ?>
-                            <span><i class="bi bi-calendar-check text-muted me-1"></i>Registrada: <strong><?= date('d/m/Y', strtotime((string)$actaDetalle['creado_en'])) ?></strong></span>
+                            <span><i class="bi bi-calendar-check text-muted me-1"></i>Registrada: <strong><?= date('d-m-Y', strtotime((string)$actaDetalle['creado_en'])) ?></strong></span>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -127,7 +127,7 @@ $csrfToken = Security::generateCSRFToken();
                             <?php
                             $num = sprintf('%02d', intval($est['orden'] ?? ($idx + 1)));
                             $fnRaw = (string)($est['fecha_nacimiento'] ?? '');
-                            $ts = $fnRaw !== '' ? strtotime($fnRaw) : false;
+                            $ts = ($fnRaw !== '' && $fnRaw !== '0000-00-00') ? strtotime($fnRaw) : false;
                             $dia = $ts ? date('d', $ts) : '';
                             $mes = $ts ? date('m', $ts) : '';
                             $anioFormato = intval($est['anio_formato'] ?? 2);
@@ -213,9 +213,10 @@ $csrfToken = Security::generateCSRFToken();
                                 <div class="card-body p-3 d-flex flex-column">
                                     <div class="text-center bg-light rounded p-2 border position-relative exp-preview-container flex-grow-1">
                                         <div class="d-flex flex-column align-items-center justify-content-between h-100 w-100 py-1">
-                                            <img src="<?= $imgUrlInline ?>"
+                                            <img src="<?= $imgUrlInline ?>&size=thumb"
                                                  alt="<?= Security::sanitize($imgTitle) ?>"
                                                  class="img-fluid rounded doc-preview-img exp-img-thumbnail btn-zoom-imagen-acta"
+                                                 loading="lazy" decoding="async"
                                                  data-zoom-src="<?= htmlspecialchars($imgUrlInline . '&format=original', ENT_QUOTES, 'UTF-8') ?>"
                                                  data-zoom-title="<?= htmlspecialchars($imgTitle, ENT_QUOTES, 'UTF-8') ?>"
                                                  title="Haga clic para ampliar y verificar datos">
@@ -246,7 +247,7 @@ $csrfToken = Security::generateCSRFToken();
         <div class="acta-offscreen-capture-wrapper no-print" aria-hidden="true">
             <div class="acta-sheet-view" id="actaDigitalCaptureArea">
                 <div class="acta-print-top-bar d-flex justify-content-between align-items-center">
-                    <span class="acta-live-datetime"><?= date('d/m/Y, h:i a') ?></span>
+                    <span class="acta-live-datetime"><?= date('d-m-Y, h:i a') ?></span>
                     <span class="fw-bold">U.E. Josefina Pimentel - Sistema Administrativo</span>
                 </div>
                 <div class="acta-digital-header text-center">
@@ -275,7 +276,7 @@ $csrfToken = Security::generateCSRFToken();
                                 <?php
                                 $num = sprintf('%02d', intval($est['orden'] ?? ($idx + 1)));
                                 $fnRaw = (string)($est['fecha_nacimiento'] ?? '');
-                                $ts = $fnRaw !== '' ? strtotime($fnRaw) : false;
+                                $ts = ($fnRaw !== '' && $fnRaw !== '0000-00-00') ? strtotime($fnRaw) : false;
                                 $dia = $ts ? date('d', $ts) : '';
                                 $mes = $ts ? date('m', $ts) : '';
                                 $anioFormato = intval($est['anio_formato'] ?? 2);

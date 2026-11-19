@@ -9,7 +9,7 @@ $userRolActual = (string)($_SESSION['user_rol'] ?? '');
 <nav class="navbar navbar-expand-lg navbar-dark navbar-custom mb-4" data-bs-theme="dark">
     <div class="container-fluid">
         <div class="navbar-left-group d-flex flex-column flex-lg-row align-items-start align-items-lg-center me-auto">
-            <a class="navbar-brand fw-bold mb-0 me-lg-3 text-nowrap navbar-brand-fixed" href="<?= BASE_URL ?>/panel">
+            <a class="navbar-brand fw-bold mb-0 me-0 text-nowrap navbar-brand-fixed" href="<?= BASE_URL ?>/panel">
                 <i class="bi bi-mortarboard-fill me-2"></i>U.E. Josefina Pimentel
             </a>
             <div class="navbar-user-box d-flex align-items-center">

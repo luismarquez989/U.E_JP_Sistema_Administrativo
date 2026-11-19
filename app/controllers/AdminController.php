@@ -133,6 +133,37 @@ class AdminController extends Controller {
         }
 
         $targetRol = (string)($targetUser['rol'] ?? 'regular');
+        $currentUserId = (int)($_SESSION['user_id'] ?? 0);
+        $isSelf = ($userId === $currentUserId);
+
+        /* Si un admin normal se edita a si mismo, solo puede cambiar su propia contrasena */
+        if ($currentRol === 'admin' && $isSelf) {
+            $passwordSelf = (string)($_POST['password'] ?? '');
+            if (empty($passwordSelf) || strlen($passwordSelf) < 8 || strlen($passwordSelf) > 72 || !preg_match('/[A-Za-z]/', $passwordSelf) || !preg_match('/[0-9]/', $passwordSelf)) {
+                $_SESSION['flash_error'] = 'Debe ingresar una nueva contraseña válida (mínimo 8 caracteres combinando letras y números).';
+                header("Location: " . BASE_URL . "/usuarios");
+                exit;
+            }
+
+            try {
+                $nombreActual = (string)($targetUser['nombres_completos'] ?? '');
+                $this->userModel->update($userId, [
+                    'nacionalidad'      => (string)($targetUser['nacionalidad'] ?? 'V'),
+                    'cedula'            => (string)($targetUser['cedula'] ?? ''),
+                    'nombres_completos' => $nombreActual,
+                    'rol'               => $targetRol,
+                    'password'          => password_hash($passwordSelf, PASSWORD_DEFAULT)
+                ]);
+
+                $this->logAction("Cambió su propia contraseña (Usuario ID #{$userId}: {$nombreActual}, Rol: {$targetRol}).");
+                $_SESSION['flash_success'] = 'Su contraseña ha sido actualizada exitosamente.';
+            } catch (Exception) {
+                $_SESSION['flash_error'] = 'Error al actualizar la contraseña en la base de datos.';
+            }
+
+            header("Location: " . BASE_URL . "/usuarios");
+            exit;
+        }
 
         if ($currentRol === 'admin' && in_array($targetRol, ['admin', 'admin_mayor'], true)) {
             $_SESSION['flash_error'] = 'Los administradores no tienen permisos para modificar a otros administradores.';

@@ -3,9 +3,26 @@
 
 class Acta {
     private PDO $db;
+    private static bool $schemaChecked = false;
 
     public function __construct() {
         $this->db = Database::getConnection();
+        $this->ensureFechaNacimientoNullable();
+    }
+
+    private function ensureFechaNacimientoNullable(): void {
+        if (self::$schemaChecked) {
+            return;
+        }
+        self::$schemaChecked = true;
+        try {
+            $stmt = $this->db->query("SHOW COLUMNS FROM acta_estudiantes LIKE 'fecha_nacimiento'");
+            $col = $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : false;
+            if (is_array($col) && strtoupper((string)($col['Null'] ?? '')) === 'NO') {
+                $this->db->exec("ALTER TABLE acta_estudiantes MODIFY COLUMN fecha_nacimiento DATE NULL DEFAULT NULL");
+            }
+        } catch (PDOException) {
+        }
     }
 
     private function obtenerSiguienteNumeroActa(string $anioEscolar): int {
@@ -229,15 +246,18 @@ class Acta {
 
             $anioLimpio = trim($anioEscolar);
             $numeroActa = $this->obtenerSiguienteNumeroActa($anioLimpio);
+            $ahora = date('Y-m-d H:i:s');
 
             $stmtActa = $this->db->prepare("
-                INSERT INTO actas (anio_escolar, numero_acta, activo, usuario_id)
-                VALUES (:anio, :num, 1, :uid)
+                INSERT INTO actas (anio_escolar, numero_acta, activo, usuario_id, creado_en, actualizado_en)
+                VALUES (:anio, :num, 1, :uid, :creado, :actualizado)
             ");
             $stmtActa->execute([
-                ':anio' => $anioLimpio,
-                ':num'  => $numeroActa,
-                ':uid'  => $userId
+                ':anio'        => $anioLimpio,
+                ':num'         => $numeroActa,
+                ':uid'         => $userId,
+                ':creado'      => $ahora,
+                ':actualizado' => $ahora
             ]);
 
             $actaId = (int)$this->db->lastInsertId();
@@ -382,7 +402,7 @@ class Acta {
                 ':nombre_norm' => self::normalizarTexto($nombreLimpio),
                 ':cedula'      => $cedulaLimpia !== '' ? mb_substr($cedulaLimpia, 0, 35, 'UTF-8') : null,
                 ':cedula_norm' => ($cedulaNorm !== null && $cedulaNorm !== '') ? substr($cedulaNorm, 0, 25) : null,
-                ':fnac'        => $est['fecha_nacimiento'],
+                ':fnac'        => !empty($est['fecha_nacimiento']) ? $est['fecha_nacimiento'] : null,
                 ':anio_fmt'    => $anioFmt,
                 ':literal'     => mb_substr(trim((string)$est['literal_nota']), 0, 15, 'UTF-8'),
                 ':obs'         => $obsLimpia !== '' ? mb_substr($obsLimpia, 0, 40, 'UTF-8') : null

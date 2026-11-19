@@ -10,7 +10,8 @@ class PersonalController extends Controller {
     private string $uploadDir;
 
     public function __construct() {
-        $this->checkAuth();
+        $esDescarga = str_contains(strtolower((string)($_GET['url'] ?? '')), 'downloadfile');
+        $this->checkAuth($esDescarga);
         $this->personalModel = new Personal();
         $this->uploadDir = dirname(__DIR__, 2) . '/public/uploads/';
         if (!is_dir($this->uploadDir)) {
@@ -76,6 +77,27 @@ class PersonalController extends Controller {
         return false;
     }
 
+    // convierte DD-MM-AAAA o AAAA-MM-DD al formato ISO AAAA-MM-DD para la bd
+    private function normalizarFechaIso(?string $raw): string|false|null {
+        $limpia = trim((string)($raw ?? ''));
+        if ($limpia === '') {
+            return null;
+        }
+        if (preg_match('/^(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})$/', $limpia, $m)) {
+            $d = (int)$m[1];
+            $mes = (int)$m[2];
+            $y = (int)$m[3];
+            return checkdate($mes, $d, $y) ? sprintf('%04d-%02d-%02d', $y, $mes, $d) : false;
+        }
+        if (preg_match('/^(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})$/', $limpia, $m)) {
+            $y = (int)$m[1];
+            $mes = (int)$m[2];
+            $d = (int)$m[3];
+            return checkdate($mes, $d, $y) ? sprintf('%04d-%02d-%02d', $y, $mes, $d) : false;
+        }
+        return false;
+    }
+
     // recoge y limpia los campos del formulario de personal
     private function recogerDatosPersonal(): array {
         $nacionalidad = strtoupper(trim((string)($_POST['nacionalidad'] ?? 'V')));
@@ -91,6 +113,7 @@ class PersonalController extends Controller {
 
         $padece = ($_POST['padece_enfermedad'] ?? 'No') === 'Si' ? 'Si' : 'No';
         $detalle = ($padece === 'Si') ? mb_substr(trim((string)($_POST['detalle_enfermedad'] ?? '')), 0, 255, 'UTF-8') : null;
+        $fechaNacIso = $this->normalizarFechaIso((string)($_POST['fecha_nacimiento'] ?? ''));
 
         return [
             'nombres'            => mb_substr(trim((string)($_POST['nombres'] ?? '')), 0, 100, 'UTF-8'),
@@ -98,7 +121,7 @@ class PersonalController extends Controller {
             'nacionalidad'       => $nacionalidad,
             'cedula'             => $cedula,
             'direccion'          => mb_substr(trim((string)($_POST['direccion'] ?? '')), 0, 300, 'UTF-8'),
-            'fecha_nacimiento'   => trim((string)($_POST['fecha_nacimiento'] ?? '')),
+            'fecha_nacimiento'   => $fechaNacIso ?: '',
             'telefono'           => mb_substr(trim((string)($_POST['telefono'] ?? '')), 0, 30, 'UTF-8'),
             'correo'             => mb_substr(trim((string)($_POST['correo'] ?? '')), 0, 120, 'UTF-8'),
             'estado_civil'       => trim((string)($_POST['estado_civil'] ?? '')),
@@ -305,7 +328,14 @@ class PersonalController extends Controller {
         $personalId = (int)($_POST['personal_id'] ?? 0);
         $titulo = trim((string)($_POST['titulo'] ?? ''));
         $descripcion = trim((string)($_POST['descripcion'] ?? ''));
-        $fechaVencimiento = !empty($_POST['fecha_vencimiento']) ? trim((string)$_POST['fecha_vencimiento']) : null;
+        $rawFechaVenc = trim((string)($_POST['fecha_vencimiento'] ?? ''));
+        $fechaVencimiento = $this->normalizarFechaIso($rawFechaVenc);
+
+        if ($rawFechaVenc !== '' && $fechaVencimiento === false) {
+            $_SESSION['flash_error'] = "La fecha de vencimiento no es válida. Use el formato DD-MM-AAAA.";
+            header("Location: " . BASE_URL . "/personal?id=" . $personalId);
+            exit;
+        }
 
         if (!$personalId || !$titulo || !$descripcion) {
             $_SESSION['flash_error'] = "El título y la descripción del registro son obligatorios.";
@@ -371,7 +401,14 @@ class PersonalController extends Controller {
         $personalId = (int)($_POST['personal_id'] ?? 0);
         $titulo = trim((string)($_POST['titulo'] ?? ''));
         $descripcion = trim((string)($_POST['descripcion'] ?? ''));
-        $fechaVencimiento = !empty($_POST['fecha_vencimiento']) ? trim((string)$_POST['fecha_vencimiento']) : null;
+        $rawFechaVenc = trim((string)($_POST['fecha_vencimiento'] ?? ''));
+        $fechaVencimiento = $this->normalizarFechaIso($rawFechaVenc);
+
+        if ($rawFechaVenc !== '' && $fechaVencimiento === false) {
+            $_SESSION['flash_error'] = "La fecha de vencimiento no es válida. Use el formato DD-MM-AAAA.";
+            header("Location: " . BASE_URL . "/personal?id=" . $personalId);
+            exit;
+        }
 
         if (!$expId || !$personalId || !$titulo || !$descripcion) {
             $_SESSION['flash_error'] = "El título y la descripción son obligatorios para actualizar el registro.";
@@ -499,32 +536,36 @@ class PersonalController extends Controller {
 
         if ($file && file_exists($file)) {
             $formatParam = trim((string)($_GET['format'] ?? ''));
+            $sizeParam = trim((string)($_GET['size'] ?? ''));
             $preferWebp = (!$forceDownload && $formatParam !== 'original');
             $filenameHeader = $customDownloadName ?: basename($file);
-            ImageOptimizer::streamFile($file, $mime, $filenameHeader, $forceDownload, $preferWebp, $this->uploadDir);
+            ImageOptimizer::streamFile($file, $mime, $filenameHeader, $forceDownload, $preferWebp, $this->uploadDir, $sizeParam);
         }
 
-        http_response_code(404);
-        die("El archivo solicitado no existe o fue removido.");
+        if ($fotoId) {
+            header("Content-Type: image/svg+xml");
+            header("Cache-Control: public, max-age=86400");
+            echo '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="50" fill="#e2e8f0"/><circle cx="50" cy="38" r="18" fill="#94a3b8"/><path d="M22 84 C22 65 35 60 50 60 C65 60 78 65 78 84 Z" fill="#94a3b8"/></svg>';
+            exit;
+        }
+
+        self::renderError(404, 'Archivo no Encontrado', 'El archivo solicitado no existe o fue removido del servidor.');
     }
 
     public function printExpediente(): void {
         $expId = filter_var($_GET['exp_id'] ?? 0, FILTER_VALIDATE_INT);
         if (!$expId) {
-            http_response_code(404);
-            die("Registro de expediente no especificado.");
+            self::renderError(404, 'Expediente no Especificado', 'No se proporcionó el identificador del registro de expediente.');
         }
 
         $exp = $this->personalModel->getExpedienteById($expId);
         if (!$exp) {
-            http_response_code(404);
-            die("El registro de expediente solicitado no existe.");
+            self::renderError(404, 'Registro no Encontrado', 'El registro de expediente solicitado no existe.');
         }
 
         $personal = $this->personalModel->findById((int)$exp['personal_id']);
         if (!$personal) {
-            http_response_code(404);
-            die("El personal asociado a este expediente no existe.");
+            self::renderError(404, 'Personal no Encontrado', 'El integrante del personal asociado a este expediente no existe.');
         }
 
         require_once __DIR__ . "/../views/expediente_print.php";

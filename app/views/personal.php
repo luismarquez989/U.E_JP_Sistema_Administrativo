@@ -78,8 +78,10 @@ $today = date('Y-m-d');
                 <?php else: ?>
                     <?php
                     $activosRenderizadosInicial = 0;
+                    $uploadDiskDir = dirname(__DIR__, 2) . '/public/uploads/';
                     foreach ($lista as $p):
-                        $fotoSrc = !empty($p['foto']) ? BASE_URL . "/personal/downloadFile?foto_id=" . $p['id'] : '';
+                        $hasFotoFisica = !empty($p['foto']) && file_exists($uploadDiskDir . basename((string)$p['foto']));
+                        $fotoSrc = $hasFotoFisica ? (BASE_URL . "/personal/downloadFile?foto_id=" . $p['id'] . "&size=thumb") : '';
                         $nombreCompleto = trim(($p['nombres'] ?? '') . ' ' . ($p['apellidos'] ?? ''));
                         $cedulaFormato = ($p['nacionalidad'] ?? 'V') . '-' . ($p['cedula'] ?? '');
                         $tieneEnfermedad = (($p['padece_enfermedad'] ?? 'No') === 'Si');
@@ -106,7 +108,11 @@ $today = date('Y-m-d');
                                     <div class="d-flex align-items-center">
                                         <div class="flex-shrink-0 me-3">
                                             <?php if ($fotoSrc): ?>
-                                                <img src="<?= $fotoSrc ?>" alt="Foto" class="rounded-circle border avatar-list-img" width="58" height="58">
+                                                <img src="<?= $fotoSrc ?>" alt="Foto" class="rounded-circle border avatar-list-img" width="58" height="58" loading="lazy" decoding="async"
+                                                     onerror="this.style.display='none'; var ph = this.nextElementSibling; if(ph) { ph.classList.remove('d-none'); ph.classList.add('d-flex'); }">
+                                                <div class="rounded-circle bg-light text-primary border align-items-center justify-content-center fw-bold avatar-list-placeholder d-none">
+                                                    <?= strtoupper(substr($p['nombres'] ?? 'P', 0, 1) . substr($p['apellidos'] ?? '', 0, 1)) ?>
+                                                </div>
                                             <?php else: ?>
                                                 <div class="rounded-circle bg-light text-primary border d-flex align-items-center justify-content-center fw-bold avatar-list-placeholder">
                                                     <?= strtoupper(substr($p['nombres'] ?? 'P', 0, 1) . substr($p['apellidos'] ?? '', 0, 1)) ?>
@@ -245,15 +251,23 @@ $today = date('Y-m-d');
         <div class="row align-items-center">
 
             <div class="col-12 col-md-auto text-center mb-3 mb-md-0 me-md-2">
-                <?php if (!empty($selected['foto'])): ?>
-                    <img src="<?= BASE_URL ?>/personal/downloadFile?foto_id=<?= $selected['id'] ?>"
+                <?php
+                $selFotoFile = dirname(__DIR__, 2) . '/public/uploads/' . basename((string)($selected['foto'] ?? ''));
+                $selHasFoto = !empty($selected['foto']) && file_exists($selFotoFile);
+                ?>
+                <?php if ($selHasFoto): ?>
+                    <img src="<?= BASE_URL ?>/personal/downloadFile?foto_id=<?= $selected['id'] ?>&size=thumb"
                          alt="Foto de perfil"
                          class="rounded-circle border shadow-sm profile-view-avatar-img btn-zoom-imagen"
-                         width="110" height="110"
+                         width="110" height="110" decoding="async"
                          data-zoom-src="<?= BASE_URL ?>/personal/downloadFile?foto_id=<?= $selected['id'] ?>&format=original"
                          data-zoom-title="Foto de Perfil - <?= htmlspecialchars(($selected['nombres'] ?? '') . ' ' . ($selected['apellidos'] ?? ''), ENT_QUOTES, 'UTF-8') ?>"
                          title="Haga clic para ampliar foto en formato original"
-                         style="cursor: pointer;">
+                         style="cursor: pointer;"
+                         onerror="this.style.display='none'; var ph = this.nextElementSibling; if(ph) { ph.classList.remove('d-none'); ph.classList.add('d-inline-flex'); }">
+                    <div class="rounded-circle bg-light text-primary border align-items-center justify-content-center shadow-sm profile-view-avatar-placeholder d-none">
+                        <i class="bi bi-person"></i>
+                    </div>
                 <?php else: ?>
                     <div class="rounded-circle bg-light text-primary border d-inline-flex align-items-center justify-content-center shadow-sm profile-view-avatar-placeholder">
                         <i class="bi bi-person"></i>
@@ -280,7 +294,12 @@ $today = date('Y-m-d');
                     <div class="col-12 col-sm-6">
                         <div><i class="bi bi-gender-ambiguous me-1"></i>Sexo: <strong><?= Security::sanitize($selected['sexo'] ?? 'N/A') ?></strong></div>
                         <div><i class="bi bi-heart me-1"></i>Estado Civil: <strong><?= Security::sanitize($selected['estado_civil'] ?? 'N/A') ?></strong></div>
-                        <div><i class="bi bi-calendar-event me-1"></i>Fecha Nac.: <strong><?= Security::sanitize($selected['fecha_nacimiento'] ?? 'N/A') ?></strong></div>
+                        <?php
+                        $fnPersonalRaw = (string)($selected['fecha_nacimiento'] ?? '');
+                        $fnPersonalTs = $fnPersonalRaw !== '' ? strtotime($fnPersonalRaw) : false;
+                        $fnPersonalFmt = $fnPersonalTs ? date('d-m-Y', $fnPersonalTs) : ($fnPersonalRaw ?: 'N/A');
+                        ?>
+                        <div><i class="bi bi-calendar-event me-1"></i>Fecha Nac.: <strong><?= Security::sanitize($fnPersonalFmt) ?></strong></div>
                         <div class="text-break"><i class="bi bi-geo-alt me-1"></i>Dirección: <strong><?= Security::sanitize($selected['direccion'] ?? 'N/A') ?></strong></div>
                     </div>
                     <div class="col-12 col-sm-6">
@@ -429,8 +448,9 @@ $today = date('Y-m-d');
                                             </div>
                                         <?php else: ?>
                                             <div class="d-flex flex-column align-items-center justify-content-between h-100 w-100 py-1">
-                                                <img src="<?= $fileUrl ?>" alt="<?= Security::sanitize($exp['titulo'] ?? '') ?>"
+                                                <img src="<?= $fileUrl ?>&size=thumb" alt="<?= Security::sanitize($exp['titulo'] ?? '') ?>"
                                                      class="img-fluid rounded doc-preview-img exp-img-thumbnail btn-zoom-imagen"
+                                                     loading="lazy" decoding="async"
                                                      data-zoom-src="<?= htmlspecialchars($fileUrl . '&format=original', ENT_QUOTES, 'UTF-8') ?>"
                                                      data-zoom-title="<?= htmlspecialchars($exp['titulo'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                                                      title="Haga clic para ampliar imagen original">
@@ -439,8 +459,8 @@ $today = date('Y-m-d');
                                                         data-titulo="<?= htmlspecialchars($exp['titulo'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
                                                         data-file-url="<?= htmlspecialchars($fileUrl, ENT_QUOTES, 'UTF-8') ?>"
                                                         data-descripcion="<?= htmlspecialchars($exp['descripcion'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
-                                                        data-fecha-registro="<?= date('d/m/Y', strtotime($exp['creado_en'] ?? 'now')) ?>"
-                                                        data-fecha-vencimiento="<?= !empty($exp['fecha_vencimiento']) ? date('d/m/Y', strtotime($exp['fecha_vencimiento'])) : '' ?>">
+                                                        data-fecha-registro="<?= date('d-m-Y', strtotime($exp['creado_en'] ?? 'now')) ?>"
+                                                        data-fecha-vencimiento="<?= !empty($exp['fecha_vencimiento']) ? date('d-m-Y', strtotime($exp['fecha_vencimiento'])) : '' ?>">
                                                     <i class="bi bi-download me-1"></i> Descargar
                                                 </button>
                                             </div>
@@ -457,7 +477,7 @@ $today = date('Y-m-d');
 
                                 <div class="pt-2 border-top d-flex flex-wrap justify-content-between align-items-center gap-1">
                                     <div class="text-muted exp-date-meta">
-                                        <i class="bi bi-clock me-1"></i><?= date('d/m/Y', strtotime($exp['creado_en'] ?? 'now')) ?>
+                                        <i class="bi bi-clock me-1"></i><?= date('d-m-Y', strtotime($exp['creado_en'] ?? 'now')) ?>
                                     </div>
 
                                     <div>
@@ -468,7 +488,7 @@ $today = date('Y-m-d');
                                                 </span>
                                             <?php else: ?>
                                                 <span class="badge bg-success py-1 px-2 shadow-sm badge-exp-status" title="Documento dentro de fecha límite de vigencia">
-                                                    <i class="bi bi-calendar-check me-1"></i> Hasta <?= date('d/m/Y', strtotime($exp['fecha_vencimiento'])) ?>
+                                                    <i class="bi bi-calendar-check me-1"></i> Hasta <?= date('d-m-Y', strtotime($exp['fecha_vencimiento'])) ?>
                                                 </span>
                                             <?php endif; ?>
                                         <?php else: ?>

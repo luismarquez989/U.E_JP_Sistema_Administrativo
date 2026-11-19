@@ -49,10 +49,11 @@ class Personal {
 
     // guardar nuevo trabajador en la bd
     public function create(array $data): int {
+        $ahora = date('Y-m-d H:i:s');
         $sql = "INSERT INTO personal (
                     nombres, apellidos, nacionalidad, cedula, direccion, fecha_nacimiento,
-                    telefono, correo, estado_civil, sexo, cargo, padece_enfermedad, detalle_enfermedad, foto, activo
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)";
+                    telefono, correo, estado_civil, sexo, cargo, padece_enfermedad, detalle_enfermedad, foto, activo, creado_en
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([
             $data['nombres'],
@@ -68,7 +69,8 @@ class Personal {
             $data['cargo'],
             $data['padece_enfermedad'],
             $data['detalle_enfermedad'],
-            $data['foto']
+            $data['foto'],
+            $ahora
         ]);
         return (int)$this->db->lastInsertId();
     }
@@ -116,8 +118,9 @@ class Personal {
     }
 
     public function addExpediente(int $personalId, string $titulo, string $descripcion, ?string $archivoPath, ?string $mimeType, ?string $fechaVenc = null): bool {
-        $stmt = $this->db->prepare("INSERT INTO expediente_personal (personal_id, titulo, descripcion, archivo_adjunto, mime_type, fecha_vencimiento) VALUES (?, ?, ?, ?, ?, ?)");
-        return $stmt->execute([$personalId, $titulo, $descripcion, $archivoPath, $mimeType, $fechaVenc ?: null]);
+        $ahora = date('Y-m-d H:i:s');
+        $stmt = $this->db->prepare("INSERT INTO expediente_personal (personal_id, titulo, descripcion, archivo_adjunto, mime_type, fecha_vencimiento, creado_en) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        return $stmt->execute([$personalId, $titulo, $descripcion, $archivoPath, $mimeType, $fechaVenc ?: null, $ahora]);
     }
 
     public function updateExpediente(int $id, string $titulo, string $descripcion, ?string $archivoPath = null, ?string $mimeType = null, ?string $fechaVenc = null): bool {

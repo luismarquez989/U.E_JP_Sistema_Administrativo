@@ -5,7 +5,13 @@
     <div class="text-center mb-3">
         <img src="<?= BASE_URL ?>/assets/img/photo.jpg"
              alt="Escudo U.E. Josefina Pimentel"
-             class="login-logo-img img-fluid">
+             class="login-logo-img img-fluid"
+             onerror="this.onerror=null; this.src='<?= BASE_URL ?>/public/assets/img/photo.jpg'; this.onerror=function(){ this.style.display='none'; var fb = document.getElementById('loginFallbackBadge'); if(fb) fb.classList.remove('d-none'); };">
+        <div id="loginFallbackBadge" class="d-none text-center">
+            <span class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow-sm" style="width: 72px; height: 72px;">
+                <i class="bi bi-mortarboard-fill fs-2"></i>
+            </span>
+        </div>
     </div>
 
     <div class="card card-custom login-card p-3 p-sm-4">

@@ -19,10 +19,11 @@ class AuditLog {
         $userName = mb_substr(trim((string)($data['usuario_nombre'] ?? 'Sistema')), 0, 150, 'UTF-8');
         $accion = (string)($data['accion'] ?? '');
         $userId = $data['usuario_id'] ?? null;
+        $fechaActual = date('Y-m-d H:i:s');
 
         try {
-            $stmt = $this->db->prepare("INSERT INTO logs (usuario_id, usuario_nombre, accion, ip_origen) VALUES (?, ?, ?, ?)");
-            return $stmt->execute([$userId, $userName, $accion, $ip]);
+            $stmt = $this->db->prepare("INSERT INTO logs (usuario_id, usuario_nombre, accion, ip_origen, fecha) VALUES (?, ?, ?, ?, ?)");
+            return $stmt->execute([$userId, $userName, $accion, $ip, $fechaActual]);
         } catch (PDOException $e) {
             error_log("Error en AuditLog::insert: " . $e->getMessage());
             return false;
@@ -37,17 +38,25 @@ class AuditLog {
 
         $dir = (strtolower($orden) === 'asc') ? 'ASC' : 'DESC';
 
-        $whereSql = match (strtolower($periodo)) {
-            'hoy'     => "WHERE fecha >= DATE_SUB(NOW(), INTERVAL 24 HOUR)",
-            'semanal' => "WHERE fecha >= DATE_SUB(NOW(), INTERVAL 7 DAY)",
-            'mensual' => "WHERE fecha >= DATE_SUB(NOW(), INTERVAL 30 DAY)",
-            default   => ""
+        $fechaCorte = match (strtolower($periodo)) {
+            'hoy'     => date('Y-m-d H:i:s', strtotime('-24 hours')),
+            'semanal' => date('Y-m-d H:i:s', strtotime('-7 days')),
+            'mensual' => date('Y-m-d H:i:s', strtotime('-30 days')),
+            default   => null
         };
 
         try {
-            $stmt = $this->db->query("SELECT * FROM logs {$whereSql} ORDER BY fecha {$dir}, id {$dir}");
+            if ($fechaCorte !== null) {
+                $stmt = $this->db->prepare("SELECT * FROM logs WHERE fecha >= :corte ORDER BY fecha {$dir}, id {$dir}");
+                $stmt->execute([':corte' => $fechaCorte]);
+            } else {
+                $stmt = $this->db->query("SELECT * FROM logs ORDER BY fecha {$dir}, id {$dir}");
+            }
             $rows = $stmt ? ($stmt->fetchAll(PDO::FETCH_ASSOC) ?: []) : [];
             foreach ($rows as &$r) {
+                $rawFecha = (string)($r['fecha'] ?? '');
+                $ts = $rawFecha !== '' ? strtotime($rawFecha) : false;
+                $r['fecha'] = $ts ? date('d-m-Y H:i:s', $ts) : ($rawFecha ?: 'N/A');
                 $r['ip'] = $r['ip_origen'] ?? 'Desconocida';
                 $r['nombres'] = $r['usuario_nombre'] ?? 'Sistema';
             }

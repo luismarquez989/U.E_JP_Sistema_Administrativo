@@ -22,6 +22,15 @@ class AuthController extends Controller {
             exit;
         }
 
+        $expiredUid = Security::getActiveUserCookie();
+        if ($expiredUid > 0) {
+            try {
+                $this->userModel->clearLastActivity($expiredUid);
+            } catch (Exception) {
+            }
+            Security::clearActiveUserCookie();
+        }
+
         $this->view("login", []);
     }
 
@@ -70,19 +79,34 @@ class AuthController extends Controller {
             exit;
         }
 
+        $prevSessionUid = (int)($_SESSION['user_id'] ?? 0);
+        $prevCookieUid  = Security::getActiveUserCookie();
+
         session_regenerate_id(true);
         $userId  = (int)($user['id'] ?? 0);
         $userNac = (string)($user['nacionalidad'] ?? 'V');
         $userCed = (string)($user['cedula'] ?? '');
+
+        // Si habia otro usuario previamente activo en este navegador, marcarlo como desconectado
+        foreach (array_unique([$prevSessionUid, $prevCookieUid]) as $oldUid) {
+            if ($oldUid > 0 && $oldUid !== $userId) {
+                try {
+                    $this->userModel->clearLastActivity($oldUid);
+                } catch (Exception) {
+                }
+            }
+        }
 
         $_SESSION['user_id']           = $userId;
         $_SESSION['user_nacionalidad'] = $userNac;
         $_SESSION['user_cedula']       = $userCed;
         $_SESSION['user_nombre']       = (string)($user['nombres_completos'] ?? '');
         $_SESSION['user_rol']          = (string)($user['rol'] ?? 'regular');
+        $_SESSION['last_heartbeat']    = time();
 
         if ($userId > 0) {
             $this->userModel->updateLastActivity($userId);
+            Security::setActiveUserCookie($userId);
         }
 
         $this->logAction("Inicio de sesión exitoso ({$userNac}-{$userCed}).");
@@ -93,15 +117,22 @@ class AuthController extends Controller {
 
     public function logout(): void {
         $userId = (int)($_SESSION['user_id'] ?? 0);
-        if ($userId > 0) {
-            try {
-                $this->userModel->clearLastActivity($userId);
-            } catch (Exception) {
+        $cookieUid = Security::getActiveUserCookie();
+
+        foreach (array_unique([$userId, $cookieUid]) as $uidToClear) {
+            if ($uidToClear > 0) {
+                try {
+                    $this->userModel->clearLastActivity($uidToClear);
+                } catch (Exception) {
+                }
             }
         }
 
-        $this->logAction("Cerró sesión en el sistema.");
+        if ($userId > 0) {
+            $this->logAction("Cerró sesión en el sistema.");
+        }
 
+        Security::clearActiveUserCookie();
         session_unset();
         session_destroy();
 
@@ -111,6 +142,35 @@ class AuthController extends Controller {
 
         $_SESSION['flash_success'] = "Sesión cerrada correctamente.";
         header("Location: " . BASE_URL . "/login");
+        exit;
+    }
+
+    public function ping(): void {
+        header('Content-Type: application/json; charset=utf-8');
+        if (!isset($_SESSION['user_id'])) {
+            $expiredUid = Security::getActiveUserCookie();
+            if ($expiredUid > 0) {
+                try {
+                    $this->userModel->clearLastActivity($expiredUid);
+                } catch (Exception) {
+                }
+                Security::clearActiveUserCookie();
+            }
+            echo json_encode(['ok' => false, 'expired' => true]);
+            exit;
+        }
+
+        $userId = (int)$_SESSION['user_id'];
+        if ($userId > 0) {
+            try {
+                $this->userModel->updateLastActivity($userId);
+                Security::setActiveUserCookie($userId);
+                $_SESSION['last_heartbeat'] = time();
+            } catch (Exception) {
+            }
+        }
+
+        echo json_encode(['ok' => true, 'online' => true]);
         exit;
     }
 }

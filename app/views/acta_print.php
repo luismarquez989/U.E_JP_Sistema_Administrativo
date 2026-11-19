@@ -56,6 +56,7 @@ $totalPaginasDoc = count($paginasEstudiantes);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= Security::sanitize($pageTitle) ?> - U.E. Josefina Pimentel</title>
+    <link rel="icon" type="image/jpeg" href="<?= BASE_URL ?>/assets/img/photo.jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="<?= BASE_URL ?>/assets/css/style.css?v=<?= time() ?>" rel="stylesheet">
@@ -86,7 +87,7 @@ $totalPaginasDoc = count($paginasEstudiantes);
         <?php if ($modoPrint === 'imagen' && !empty($imagenAdjunta)): ?>
             <div class="sheet-container acta-sheet-container">
                 <div class="acta-print-top-bar d-flex justify-content-between align-items-center">
-                    <span class="fechaHoraImpresion"><?= date('d/m/Y, h:i a') ?></span>
+                    <span class="fechaHoraImpresion"><?= date('d-m-Y, h:i a') ?></span>
                     <span class="fw-bold">U.E. Josefina Pimentel - Sistema Administrativo</span>
                 </div>
                 <div class="acta-book-print-box text-center mt-3">
@@ -104,7 +105,7 @@ $totalPaginasDoc = count($paginasEstudiantes);
                 ?>
                 <div class="sheet-container acta-sheet-container <?= !$esPrimera ? 'acta-page-continuacion' : '' ?>">
                     <div class="acta-print-top-bar d-flex justify-content-between align-items-center">
-                        <span class="fechaHoraImpresion"><?= date('d/m/Y, h:i a') ?></span>
+                        <span class="fechaHoraImpresion"><?= date('d-m-Y, h:i a') ?></span>
                         <span class="fw-bold">U.E. Josefina Pimentel - Sistema Administrativo</span>
                     </div>
 
@@ -140,7 +141,7 @@ $totalPaginasDoc = count($paginasEstudiantes);
                                     <?php
                                     $num = sprintf('%02d', intval($est['orden'] ?? ($idx + 1)));
                                     $fnRaw = (string)($est['fecha_nacimiento'] ?? '');
-                                    $ts = $fnRaw !== '' ? strtotime($fnRaw) : false;
+                                    $ts = ($fnRaw !== '' && $fnRaw !== '0000-00-00') ? strtotime($fnRaw) : false;
                                     $dia = $ts ? date('d', $ts) : '';
                                     $mes = $ts ? date('m', $ts) : '';
                                     $anioFormato = intval($est['anio_formato'] ?? 2);

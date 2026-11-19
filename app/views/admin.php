@@ -52,7 +52,7 @@ $currentRol = $currentRol ?? ($_SESSION['user_rol'] ?? 'regular');
                                 $uNombre = $u['nombres_completos'] ?? '';
                                 $isSelf = ($uId === $currentUserId);
                                 $segundosInactivo = isset($u['segundos_inactivo']) && $u['segundos_inactivo'] !== null ? (int)$u['segundos_inactivo'] : null;
-                                $isOnline = ($segundosInactivo !== null && $segundosInactivo >= 0 && $segundosInactivo <= 300) || $isSelf;
+                                $isOnline = ($segundosInactivo !== null && $segundosInactivo >= 0 && $segundosInactivo <= 45) || $isSelf;
 
                                 /* Determinar permisos de edicion y borrado segun jerarquia */
                                 $canEdit = false;
@@ -62,12 +62,12 @@ $currentRol = $currentRol ?? ($_SESSION['user_rol'] ?? 'regular');
                                     $canEdit = ($isSelf || in_array($uRol, ['admin', 'regular'], true));
                                     $canDelete = (!$isSelf && in_array($uRol, ['admin', 'regular'], true));
                                 } elseif ($currentRol === 'admin') {
-                                    $canEdit = ($uRol === 'regular');
+                                    $canEdit = ($isSelf || $uRol === 'regular');
                                     $canDelete = ($uRol === 'regular');
                                 }
                             ?>
                             <tr class="<?= $isSelf ? 'table-primary bg-opacity-10' : '' ?>">
-                                <td class="text-center text-muted fw-bold"><?= $index + 1 ?></td>
+                                <td class="text-center text-muted fw-bold"><?= $uId ?></td>
                                 <td class="fw-bold text-dark text-nowrap">
                                     <?= Security::sanitize($uNacionalidad . '-' . $uCedula) ?>
                                 </td>
@@ -112,11 +112,12 @@ $currentRol = $currentRol ?? ($_SESSION['user_rol'] ?? 'regular');
                                         <?php if ($canEdit): ?>
                                             <button type="button" class="btn btn-outline-secondary fw-semibold btn-editar-usuario"
                                                     data-id="<?= $uId ?>"
+                                                    data-self="<?= $isSelf ? '1' : '0' ?>"
                                                     data-nacionalidad="<?= htmlspecialchars($uNacionalidad, ENT_QUOTES, 'UTF-8') ?>"
                                                     data-cedula="<?= htmlspecialchars((string)$uCedula, ENT_QUOTES, 'UTF-8') ?>"
                                                     data-nombres="<?= htmlspecialchars($uNombre, ENT_QUOTES, 'UTF-8') ?>"
                                                     data-rol="<?= htmlspecialchars($uRol, ENT_QUOTES, 'UTF-8') ?>"
-                                                    title="Editar este usuario">
+                                                    title="<?= ($currentRol === 'admin' && $isSelf) ? 'Cambiar mi contraseña' : 'Editar este usuario' ?>">
                                                 <i class="bi bi-pencil-square me-1"></i> Editar
                                             </button>
                                         <?php endif; ?>

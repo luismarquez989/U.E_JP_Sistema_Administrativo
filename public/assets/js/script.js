@@ -3,6 +3,25 @@
 document.addEventListener('DOMContentLoaded', () => {
     const baseUrl = document.body.getAttribute('data-base-url') || '';
 
+    // Pulso de actividad cada 20 segundos para mantener el estado Conectado sincronizado
+    if (document.querySelector('.navbar-custom') && !window.location.pathname.endsWith('/login')) {
+        setInterval(() => {
+            if (document.visibilityState === 'hidden') return;
+            fetch(`${baseUrl}/auth/ping`, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            })
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data && data.expired) {
+                        window.location.href = `${baseUrl}/login`;
+                    }
+                })
+                .catch(() => {});
+        }, 20000);
+    }
+
     function escapeHtml(str) {
         if (str === null || str === undefined) return '';
         return String(str)
@@ -15,10 +34,84 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function formatearFechaHoraActual() {
         const now = new Date();
-        const dateStr = now.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: '2-digit' });
-        const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
-        return `${dateStr}, ${timeStr}`;
+        const parts = new Intl.DateTimeFormat('es-VE', {
+            timeZone: 'America/Caracas',
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric'
+        }).formatToParts(now);
+        const d = parts.find((p) => p.type === 'day')?.value || '01';
+        const m = parts.find((p) => p.type === 'month')?.value || '01';
+        const y = parts.find((p) => p.type === 'year')?.value || '2026';
+        const timeStr = now.toLocaleTimeString('es-VE', {
+            timeZone: 'America/Caracas',
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true
+        });
+        return `${d}-${m}-${y}, ${timeStr}`;
     }
+
+    function convertirIsoADmy(fechaIso) {
+        if (!fechaIso) return '';
+        const limpia = String(fechaIso).trim();
+        const m = limpia.match(/^(\d{4})[\-\/](\d{2})[\-\/](\d{2})$/);
+        if (m) {
+            return `${m[3]}-${m[2]}-${m[1]}`;
+        }
+        return limpia;
+    }
+
+    function convertirDmyAIso(fechaDmy) {
+        if (!fechaDmy) return '';
+        const limpia = String(fechaDmy).trim();
+        const m = limpia.match(/^(\d{2})[\-\/](\d{2})[\-\/](\d{4})$/);
+        if (m) {
+            return `${m[3]}-${m[2]}-${m[1]}`;
+        }
+        return '';
+    }
+
+    document.querySelectorAll('.input-fecha-dmy').forEach((inp) => {
+        inp.addEventListener('input', function () {
+            const digits = this.value.replace(/\D/g, '').slice(0, 8);
+            if (digits.length <= 2) {
+                this.value = digits;
+            } else if (digits.length <= 4) {
+                this.value = `${digits.slice(0, 2)}-${digits.slice(2)}`;
+            } else {
+                this.value = `${digits.slice(0, 2)}-${digits.slice(2, 4)}-${digits.slice(4, 8)}`;
+            }
+        });
+    });
+
+    document.querySelectorAll('.btn-calendario-dmy').forEach((btn) => {
+        const group = btn.closest('.input-group');
+        if (!group) return;
+        const txtInput = group.querySelector('.input-fecha-dmy');
+        const datePicker = group.querySelector('.picker-oculto-dmy');
+        if (!txtInput || !datePicker) return;
+
+        btn.addEventListener('click', () => {
+            const isoActual = convertirDmyAIso(txtInput.value);
+            if (isoActual) {
+                datePicker.value = isoActual;
+            }
+            if (typeof datePicker.showPicker === 'function') {
+                datePicker.showPicker();
+            } else {
+                datePicker.focus();
+                datePicker.click();
+            }
+        });
+
+        datePicker.addEventListener('change', () => {
+            if (datePicker.value) {
+                txtInput.value = convertirIsoADmy(datePicker.value);
+                txtInput.dispatchEvent(new Event('input', { bubbles: true }));
+            }
+        });
+    });
 
     // Desactivar autocompletado en formularios internos (excepto login)
     document.querySelectorAll('form:not([action*="/login"])').forEach((form) => {
@@ -168,10 +261,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 tbodyLogs.innerHTML = logs.map(function (log) {
                     const nombreCompleto = escapeHtml(log.nombres || 'Sistema');
                     return '<tr>' +
-                        '<td class="text-secondary small text-nowrap">' + escapeHtml(log.fecha || '') + '</td>' +
-                        '<td><div class="fw-semibold text-dark text-truncate audit-user-truncate" title="' + nombreCompleto + '">' + nombreCompleto + '</div></td>' +
-                        '<td class="text-break">' + escapeHtml(log.accion || '') + '</td>' +
-                        '<td><code class="text-muted small">' + escapeHtml(log.ip || '') + '</code></td>' +
+                        '<td class="text-nowrap audit-cell-fecha">' +
+                            '<span class="d-inline-flex align-items-center">' +
+                                '<i class="bi bi-clock me-1 text-muted d-lg-none"></i>' +
+                                escapeHtml(log.fecha || '') +
+                            '</span>' +
+                        '</td>' +
+                        '<td class="audit-cell-user">' +
+                            '<span class="d-inline-block text-truncate fw-bold audit-user-truncate" title="' + nombreCompleto + '">' +
+                                '<i class="bi bi-person-fill me-1 text-primary d-lg-none"></i>' +
+                                nombreCompleto +
+                            '</span>' +
+                        '</td>' +
+                        '<td class="text-break audit-cell-action">' + escapeHtml(log.accion || '') + '</td>' +
+                        '<td class="text-nowrap audit-cell-ip">' +
+                            '<span class="text-muted small">' +
+                                '<i class="bi bi-hdd-network me-1 d-lg-none"></i>' +
+                                '<span class="d-lg-none fw-semibold">IP: </span>' + escapeHtml(log.ip || 'Desconocida') +
+                            '</span>' +
+                        '</td>' +
                     '</tr>';
                 }).join('');
             })
@@ -199,34 +307,74 @@ document.addEventListener('DOMContentLoaded', () => {
             const editRolSelect = document.getElementById('editRolSelect');
             const editRolFixedDisplay = document.getElementById('editRolFixedDisplay');
             const editRolHelpText = document.getElementById('editRolHelpText');
+            const editPasswordLabel = document.getElementById('editPasswordLabel');
+            const editPasswordInput = document.getElementById('editPasswordInput');
+            const editPasswordHelpText = document.getElementById('editPasswordHelpText');
 
             document.querySelectorAll('.btn-editar-usuario').forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     const rol = this.getAttribute('data-rol') || 'regular';
+                    const isSelf = this.getAttribute('data-self') === '1';
+                    const soloClaveSelfAdmin = (currentRol === 'admin' && isSelf);
 
                     editUserId.value = this.getAttribute('data-id') || '';
                     editNacionalidad.value = this.getAttribute('data-nacionalidad') || 'V';
                     editCedula.value = this.getAttribute('data-cedula') || '';
                     editNombres.value = this.getAttribute('data-nombres') || '';
+                    if (editPasswordInput) editPasswordInput.value = '';
 
-                    if (rol === 'admin_mayor') {
+                    if (soloClaveSelfAdmin) {
+                        editNacionalidad.setAttribute('disabled', 'disabled');
+                        editCedula.setAttribute('disabled', 'disabled');
+                        editNombres.setAttribute('disabled', 'disabled');
+
                         editRolSelect.classList.add('d-none');
                         editRolSelect.setAttribute('disabled', 'disabled');
                         editRolFixedDisplay.classList.remove('d-none');
-                        editRolFixedDisplay.value = 'Admin Mayor';
-                        editRolHelpText.textContent = 'El rol de Admin Mayor no se puede modificar.';
-                    } else if (currentRol === 'admin') {
-                        editRolSelect.classList.add('d-none');
-                        editRolSelect.setAttribute('disabled', 'disabled');
-                        editRolFixedDisplay.classList.remove('d-none');
-                        editRolFixedDisplay.value = 'Regular';
-                        editRolHelpText.textContent = 'Los administradores solo pueden gestionar usuarios con rol Regular.';
+                        editRolFixedDisplay.value = 'Administrador';
+                        editRolHelpText.textContent = 'Como Administrador, únicamente puede actualizar su propia contraseña.';
+
+                        if (editPasswordLabel) editPasswordLabel.textContent = 'Nueva Contraseña (*)';
+                        if (editPasswordInput) {
+                            editPasswordInput.setAttribute('required', 'required');
+                            editPasswordInput.placeholder = 'Mínimo 8 caracteres (letras y números)';
+                        }
+                        if (editPasswordHelpText) {
+                            editPasswordHelpText.textContent = 'Ingrese su nueva contraseña (mínimo 8 caracteres combinando letras y números).';
+                        }
                     } else {
-                        editRolFixedDisplay.classList.add('d-none');
-                        editRolSelect.classList.remove('d-none');
-                        editRolSelect.removeAttribute('disabled');
-                        editRolSelect.value = rol === 'admin' ? 'admin' : 'regular';
-                        editRolHelpText.textContent = 'Seleccione el rol correspondiente para este usuario.';
+                        editNacionalidad.removeAttribute('disabled');
+                        editCedula.removeAttribute('disabled');
+                        editNombres.removeAttribute('disabled');
+
+                        if (editPasswordLabel) editPasswordLabel.textContent = 'Nueva Contraseña (Opcional)';
+                        if (editPasswordInput) {
+                            editPasswordInput.removeAttribute('required');
+                            editPasswordInput.placeholder = 'Dejar en blanco para conservar la actual';
+                        }
+                        if (editPasswordHelpText) {
+                            editPasswordHelpText.textContent = 'Complete este campo únicamente si desea cambiar la contraseña del usuario (mínimo 8 caracteres, letras y números).';
+                        }
+
+                        if (rol === 'admin_mayor') {
+                            editRolSelect.classList.add('d-none');
+                            editRolSelect.setAttribute('disabled', 'disabled');
+                            editRolFixedDisplay.classList.remove('d-none');
+                            editRolFixedDisplay.value = 'Admin Mayor';
+                            editRolHelpText.textContent = 'El rol de Admin Mayor no se puede modificar.';
+                        } else if (currentRol === 'admin') {
+                            editRolSelect.classList.add('d-none');
+                            editRolSelect.setAttribute('disabled', 'disabled');
+                            editRolFixedDisplay.classList.remove('d-none');
+                            editRolFixedDisplay.value = 'Regular';
+                            editRolHelpText.textContent = 'Los administradores solo pueden gestionar usuarios con rol Regular.';
+                        } else {
+                            editRolFixedDisplay.classList.add('d-none');
+                            editRolSelect.classList.remove('d-none');
+                            editRolSelect.removeAttribute('disabled');
+                            editRolSelect.value = rol === 'admin' ? 'admin' : 'regular';
+                            editRolHelpText.textContent = 'Seleccione el rol correspondiente para este usuario.';
+                        }
                     }
 
                     editModal.show();
@@ -632,7 +780,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('editPersonalApellidos').value = d.apellidos || '';
             document.getElementById('editPersonalNacionalidad').value = d.nacionalidad || 'V';
             document.getElementById('editPersonalCedula').value = d.cedula || '';
-            document.getElementById('editPersonalFechaNac').value = d.fechaNac || '';
+            document.getElementById('editPersonalFechaNac').value = convertirIsoADmy(d.fechaNac || '');
             document.getElementById('editPersonalCargo').value = d.cargo || 'Docente';
             document.getElementById('editPersonalTelefono').value = d.telefono || '';
             document.getElementById('editPersonalCorreo').value = d.correo || '';
@@ -723,7 +871,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const counter = document.getElementById('charCountExpEditar');
             if (counter) counter.textContent = descripcion.length;
 
-            document.getElementById('editExpFechaVencimiento').value = fechaVenc;
+            document.getElementById('editExpFechaVencimiento').value = convertirIsoADmy(fechaVenc);
 
             const previewContainer = document.getElementById('previewContainerExpEditar');
             if (previewContainer) previewContainer.classList.add('d-none');
@@ -931,13 +1079,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 <input type="text" name="estudiantes[${index}][cedula]" class="form-control form-control-sm text-center inp-cedula" maxlength="20" placeholder="Opcional" autocomplete="off">
             </td>
             <td>
-                <input type="text" inputmode="numeric" name="estudiantes[${index}][dia]" class="form-control form-control-sm text-center inp-dia acta-no-spin" maxlength="2" pattern="\\d{2}" required placeholder="DD" autocomplete="off">
+                <input type="text" inputmode="numeric" name="estudiantes[${index}][dia]" class="form-control form-control-sm text-center inp-dia acta-no-spin" maxlength="2" placeholder="DD" autocomplete="off">
             </td>
             <td>
-                <input type="text" inputmode="numeric" name="estudiantes[${index}][mes]" class="form-control form-control-sm text-center inp-mes acta-no-spin" maxlength="2" pattern="\\d{2}" required placeholder="MM" autocomplete="off">
+                <input type="text" inputmode="numeric" name="estudiantes[${index}][mes]" class="form-control form-control-sm text-center inp-mes acta-no-spin" maxlength="2" placeholder="MM" autocomplete="off">
             </td>
             <td>
-                <input type="text" inputmode="numeric" name="estudiantes[${index}][anio]" class="form-control form-control-sm text-center inp-anio acta-no-spin" maxlength="4" pattern="\\d{2}|\\d{4}" required placeholder="AA" autocomplete="off">
+                <input type="text" inputmode="numeric" name="estudiantes[${index}][anio]" class="form-control form-control-sm text-center inp-anio acta-no-spin" maxlength="4" placeholder="AA" autocomplete="off">
             </td>
             <td>
                 <input type="text" name="estudiantes[${index}][literal_nota]" class="form-control form-control-sm text-center fw-bold inp-literal" maxlength="10" required placeholder="A / 20" autocomplete="off">

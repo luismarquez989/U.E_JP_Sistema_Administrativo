@@ -8,13 +8,24 @@ $esVistaActas = str_ends_with((string)$childView, 'actas.php');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Sistema Administrativo de Control de Actas de Graduación y Expedientes de Personal de la U.E. Josefina Pimentel.">
+    <meta name="description" content="Portal Administrativo para la gestión y consulta de Actas de Graduación y Expedientes de Personal de la U.E. Josefina Pimentel.">
     <meta name="theme-color" content="#1e293b">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="U.E. Josefina Pimentel - Portal Administrativo">
+    <meta property="og:description" content="Sistema Administrativo de Control de Actas de Graduación y Expedientes de Personal de la U.E. Josefina Pimentel.">
+    <meta property="og:image" content="<?= BASE_URL ?>/assets/img/photo.jpg">
+    <meta property="og:url" content="<?= BASE_URL ?>/">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="U.E. Josefina Pimentel - Portal Administrativo">
+    <meta name="twitter:description" content="Sistema Administrativo de Control de Actas de Graduación y Expedientes de Personal de la U.E. Josefina Pimentel.">
+    <meta name="twitter:image" content="<?= BASE_URL ?>/assets/img/photo.jpg">
     <title>U.E. Josefina Pimentel - Sistema Administrativo</title>
+    <link rel="icon" type="image/jpeg" href="<?= BASE_URL ?>/assets/img/photo.jpg">
+    <link rel="apple-touch-icon" href="<?= BASE_URL ?>/assets/img/photo.jpg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link href="<?= BASE_URL ?>/assets/css/style.css?v=<?= time() ?>" rel="stylesheet">
+    <link href="<?= BASE_URL ?>/assets/css/style.css?v=<?= @filemtime(dirname(__DIR__, 3) . '/public/assets/css/style.css') ?: 1 ?>" rel="stylesheet">
 </head>
 <body data-base-url="<?= htmlspecialchars(BASE_URL, ENT_QUOTES, 'UTF-8') ?>">
 
@@ -36,6 +47,6 @@ $esVistaActas = str_ends_with((string)$childView, 'actas.php');
 <?php if ($esVistaActas): ?>
     <script src="<?= BASE_URL ?>/assets/js/html2pdf.bundle.min.js" defer></script>
 <?php endif; ?>
-<script src="<?= BASE_URL ?>/assets/js/script.js?v=<?= time() ?>" defer></script>
+<script src="<?= BASE_URL ?>/assets/js/script.js?v=<?= @filemtime(dirname(__DIR__, 3) . '/public/assets/js/script.js') ?: 1 ?>" defer></script>
 </body>
 </html>

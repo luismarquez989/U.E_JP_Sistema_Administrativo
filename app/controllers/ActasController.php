@@ -10,7 +10,8 @@ class ActasController extends Controller {
     private string $uploadDir;
 
     public function __construct() {
-        $this->checkAuth();
+        $esDescarga = str_contains(strtolower((string)($_GET['url'] ?? '')), 'downloadimagen');
+        $this->checkAuth($esDescarga);
         $this->actaModel = new Acta();
         $this->uploadDir = dirname(__DIR__, 2) . '/public/uploads/';
         if (!is_dir($this->uploadDir)) {
@@ -246,20 +247,23 @@ class ActasController extends Controller {
         $forceDownload = isset($_GET['download']) && $_GET['download'] == '1';
 
         if (!$imgId) {
-            http_response_code(404);
-            die("Imagen no especificada.");
+            self::renderError(404, 'Imagen no Especificada', 'No se indicó el identificador de la fotografía del acta.');
         }
 
         $img = $this->actaModel->getImagenById($imgId);
         if (!$img || empty($img['archivo'])) {
-            http_response_code(404);
-            die("La imagen solicitada no existe.");
+            self::renderError(404, 'Fotografía no Encontrada', 'La fotografía del libro solicitada no existe en los registros.');
         }
 
         $filePath = $this->uploadDir . basename((string)$img['archivo']);
         if (!file_exists($filePath)) {
-            http_response_code(404);
-            die("El archivo físico de la imagen no se encuentra en el servidor.");
+            if (!$forceDownload) {
+                header("Content-Type: image/svg+xml");
+                header("Cache-Control: public, max-age=3600");
+                echo '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="260" viewBox="0 0 400 260"><rect width="400" height="260" fill="#f1f5f9"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#64748b" font-family="sans-serif" font-size="14">Imagen no disponible en el servidor</text></svg>';
+                exit;
+            }
+            self::renderError(404, 'Archivo no Encontrado', 'El archivo físico de la fotografía no se encuentra en el servidor.');
         }
 
         $mime = $img['mime_type'] ?: ImageOptimizer::detectMimeType($filePath, 'image/jpeg');
@@ -269,8 +273,9 @@ class ActasController extends Controller {
         $downloadName = "Acta_{$numActa}_{$anioClean}_Libro_Foto_{$img['orden']}.{$ext}";
 
         $formatParam = trim((string)($_GET['format'] ?? ''));
+        $sizeParam = trim((string)($_GET['size'] ?? ''));
         $preferWebp = (!$forceDownload && $formatParam !== 'original');
-        ImageOptimizer::streamFile($filePath, $mime, $downloadName, $forceDownload, $preferWebp, $this->uploadDir);
+        ImageOptimizer::streamFile($filePath, $mime, $downloadName, $forceDownload, $preferWebp, $this->uploadDir, $sizeParam);
     }
 
     public function printActa(): void {
@@ -284,20 +289,17 @@ class ActasController extends Controller {
         if ($imgId) {
             $imagenAdjunta = $this->actaModel->getImagenById($imgId);
             if (!$imagenAdjunta) {
-                http_response_code(404);
-                die("La imagen solicitada no existe.");
+                self::renderError(404, 'Fotografía no Encontrada', 'La fotografía del libro solicitada no existe.');
             }
             $acta = $this->actaModel->getActaById((int)$imagenAdjunta['acta_id']);
             $modoPrint = 'imagen';
         } elseif ($actaId) {
             $acta = $this->actaModel->getActaById($actaId);
             if (!$acta) {
-                http_response_code(404);
-                die("El acta solicitada no existe.");
+                self::renderError(404, 'Acta no Encontrada', 'El acta de graduación solicitada no existe.');
             }
         } else {
-            http_response_code(404);
-            die("Parámetros de impresión no válidos.");
+            self::renderError(400, 'Parámetros Inválidos', 'Los parámetros de impresión proporcionados no son válidos.');
         }
 
         require_once __DIR__ . "/../views/acta_print.php";
@@ -343,13 +345,18 @@ class ActasController extends Controller {
                 return false;
             }
 
-            $anioDigitos = (string)preg_replace('/[^0-9]/', '', $anio);
-            $anioFormato = (strlen($anioDigitos) === 4) ? 4 : 2;
+            $fechaIso = null;
+            $anioFormato = 2;
 
-            $fechaIso = $this->construirFechaIso($dia, $mes, $anio);
-            if ($fechaIso === false) {
-                $errorMsg = "En la fila #{$filaNum} ({$nombre}), la Fecha de Nacimiento (Día/Mes/Año) no es válida.";
-                return false;
+            if ($dia !== '' || $mes !== '' || $anio !== '') {
+                $anioDigitos = (string)preg_replace('/[^0-9]/', '', $anio);
+                $anioFormato = (strlen($anioDigitos) === 4) ? 4 : 2;
+
+                $fechaIso = $this->construirFechaIso($dia, $mes, $anio);
+                if ($fechaIso === false) {
+                    $errorMsg = "En la fila #{$filaNum} ({$nombre}), la Fecha de Nacimiento (Día/Mes/Año) no es válida.";
+                    return false;
+                }
             }
 
             $procesados[] = [
@@ -407,15 +414,22 @@ class ActasController extends Controller {
     }
 
     private function construirFechaIso(string $diaRaw, string $mesRaw, string $anioRaw): string|false {
-        $d = filter_var($diaRaw, FILTER_VALIDATE_INT);
-        $m = filter_var($mesRaw, FILTER_VALIDATE_INT);
+        $dStr = (string)preg_replace('/[^0-9]/', '', $diaRaw);
+        $mStr = (string)preg_replace('/[^0-9]/', '', $mesRaw);
         $yStr = (string)preg_replace('/[^0-9]/', '', $anioRaw);
 
-        if (!$d || !$m || $yStr === '') {
+        if ($dStr === '' || $mStr === '' || $yStr === '') {
             return false;
         }
 
+        $d = (int)$dStr;
+        $m = (int)$mStr;
         $y = (int)$yStr;
+
+        if ($d < 1 || $d > 31 || $m < 1 || $m > 12) {
+            return false;
+        }
+
         if (strlen($yStr) <= 2) {
             $anioActualCorto = (int)date('y');
             $y = ($y <= $anioActualCorto) ? (2000 + $y) : (1900 + $y);
@@ -423,7 +437,8 @@ class ActasController extends Controller {
             return false;
         }
 
-        if ($y < 1900 || $y > (int)date('Y') || !checkdate($m, $d, $y)) {
+        $maxAnio = max((int)date('Y'), 2030);
+        if ($y < 1900 || $y > $maxAnio || !checkdate($m, $d, $y)) {
             return false;
         }
 

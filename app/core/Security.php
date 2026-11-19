@@ -21,6 +21,46 @@ class Security {
             );
         }
         session_destroy();
+        self::clearActiveUserCookie();
+    }
+
+    public static function setActiveUserCookie(int $userId): void {
+        if ($userId <= 0 || headers_sent()) {
+            return;
+        }
+        $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (strtolower((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https')
+            || ((int)($_SERVER['SERVER_PORT'] ?? 80) === 443);
+        setcookie('uejp_active_uid', (string)$userId, [
+            'expires'  => time() + (86400 * 30),
+            'path'     => '/',
+            'secure'   => $isHttps,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+        $_COOKIE['uejp_active_uid'] = (string)$userId;
+    }
+
+    public static function getActiveUserCookie(): int {
+        return isset($_COOKIE['uejp_active_uid']) && ctype_digit((string)$_COOKIE['uejp_active_uid'])
+            ? (int)$_COOKIE['uejp_active_uid']
+            : 0;
+    }
+
+    public static function clearActiveUserCookie(): void {
+        if (!headers_sent()) {
+            $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+                || (strtolower((string)($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https')
+                || ((int)($_SERVER['SERVER_PORT'] ?? 80) === 443);
+            setcookie('uejp_active_uid', '', [
+                'expires'  => time() - 42000,
+                'path'     => '/',
+                'secure'   => $isHttps,
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]);
+        }
+        unset($_COOKIE['uejp_active_uid']);
     }
 
     public static function generateCSRFToken(): string {
@@ -32,7 +72,17 @@ class Security {
 
     public static function verifyCSRFToken(?string $token): bool {
         if (!isset($_SESSION['csrf_token']) || !is_string($token) || !hash_equals($_SESSION['csrf_token'], $token)) {
-            die("Error de validación de seguridad (Token CSRF inválido).");
+            if (class_exists('Controller')) {
+                Controller::renderError(
+                    403,
+                    'Sesión o Token de Seguridad Expirado',
+                    'No se pudo validar el token de seguridad de su solicitud.',
+                    'Esto suele ocurrir si la pestaña permaneció inactiva por mucho tiempo. Regrese a la página anterior, recárguela e intente nuevamente.'
+                );
+            }
+            http_response_code(403);
+            require __DIR__ . '/../views/layouts/500.php';
+            exit;
         }
         return true;
     }

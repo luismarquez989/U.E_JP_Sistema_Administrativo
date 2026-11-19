@@ -115,9 +115,9 @@ $csrfToken = Security::generateCSRFToken();
                     </div>
 
                     <div class="mb-2">
-                        <label class="form-label fw-semibold">Nueva Contraseña (Opcional)</label>
-                        <input type="password" name="password" class="form-control" maxlength="72" placeholder="Dejar en blanco para conservar la actual" autocomplete="off">
-                        <div class="form-text small">Complete este campo únicamente si desea cambiar la contraseña del usuario (mínimo 8 caracteres, letras y números).</div>
+                        <label class="form-label fw-semibold" id="editPasswordLabel">Nueva Contraseña (Opcional)</label>
+                        <input type="password" name="password" id="editPasswordInput" class="form-control" maxlength="72" placeholder="Dejar en blanco para conservar la actual" autocomplete="off">
+                        <div class="form-text small" id="editPasswordHelpText">Complete este campo únicamente si desea cambiar la contraseña del usuario (mínimo 8 caracteres, letras y números).</div>
                     </div>
                 </div>
 

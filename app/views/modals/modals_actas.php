@@ -168,7 +168,7 @@ $csrfToken = Security::generateCSRFToken();
                     <div class="acta-preview-frame p-3 bg-secondary bg-opacity-10 rounded">
                         <div class="acta-sheet-view mx-auto shadow-sm">
                             <div class="acta-print-top-bar d-flex justify-content-between align-items-center">
-                                <span class="acta-live-datetime"><?= date('d/m/Y, h:i a') ?></span>
+                                <span class="acta-live-datetime"><?= date('d-m-Y, h:i a') ?></span>
                                 <span class="fw-bold">U.E. Josefina Pimentel - Sistema Administrativo</span>
                             </div>
                             <div class="acta-digital-header text-center">
@@ -283,7 +283,7 @@ $csrfToken = Security::generateCSRFToken();
                                     <?php foreach ($estudiantes as $idx => $est): ?>
                                         <?php
                                         $fnRaw = (string)($est['fecha_nacimiento'] ?? '');
-                                        $ts = $fnRaw !== '' ? strtotime($fnRaw) : false;
+                                        $ts = ($fnRaw !== '' && $fnRaw !== '0000-00-00') ? strtotime($fnRaw) : false;
                                         $diaVal = $ts ? date('d', $ts) : '';
                                         $mesVal = $ts ? date('m', $ts) : '';
                                         $anioFull = $ts ? date('Y', $ts) : '';
@@ -305,15 +305,15 @@ $csrfToken = Security::generateCSRFToken();
                                             </td>
                                             <td>
                                                 <input type="text" inputmode="numeric" name="estudiantes[<?= $idx ?>][dia]" class="form-control form-control-sm text-center inp-dia acta-no-spin"
-                                                       value="<?= $diaVal ?>" maxlength="2" pattern="\d{2}" required placeholder="DD">
+                                                       value="<?= $diaVal ?>" maxlength="2" placeholder="DD">
                                             </td>
                                             <td>
                                                 <input type="text" inputmode="numeric" name="estudiantes[<?= $idx ?>][mes]" class="form-control form-control-sm text-center inp-mes acta-no-spin"
-                                                       value="<?= $mesVal ?>" maxlength="2" pattern="\d{2}" required placeholder="MM">
+                                                       value="<?= $mesVal ?>" maxlength="2" placeholder="MM">
                                             </td>
                                             <td>
                                                 <input type="text" inputmode="numeric" name="estudiantes[<?= $idx ?>][anio]" class="form-control form-control-sm text-center inp-anio acta-no-spin"
-                                                       value="<?= $anioVal ?>" maxlength="4" pattern="\d{2}|\d{4}" required placeholder="AA">
+                                                       value="<?= $anioVal ?>" maxlength="4" placeholder="AA">
                                             </td>
                                             <td>
                                                 <input type="text" name="estudiantes[<?= $idx ?>][literal_nota]" class="form-control form-control-sm text-center fw-bold inp-literal"
@@ -356,7 +356,7 @@ $csrfToken = Security::generateCSRFToken();
                                         <div class="col-6 col-md-3 item-img-existente" data-img-id="<?= $imgId ?>">
                                             <div class="card p-2 border shadow-sm bg-white text-center">
                                                 <input type="hidden" name="imagenes_conservar[]" value="<?= $imgId ?>">
-                                                <img src="<?= BASE_URL ?>/actas/downloadImagen?img_id=<?= $imgId ?>" alt="Imagen" class="img-fluid rounded mb-2 acta-edit-thumb">
+                                                <img src="<?= BASE_URL ?>/actas/downloadImagen?img_id=<?= $imgId ?>&size=thumb" alt="Imagen" class="img-fluid rounded mb-2 acta-edit-thumb" loading="lazy" decoding="async">
                                                 <button type="button" class="btn btn-outline-danger btn-sm w-100 py-0 btn-quitar-img-existente">
                                                     <i class="bi bi-trash me-1"></i>Quitar
                                                 </button>
@@ -391,7 +391,7 @@ $csrfToken = Security::generateCSRFToken();
                         <div class="acta-preview-frame p-3 bg-secondary bg-opacity-10 rounded">
                             <div class="acta-sheet-view mx-auto shadow-sm">
                                 <div class="acta-print-top-bar d-flex justify-content-between align-items-center">
-                                    <span class="acta-live-datetime"><?= date('d/m/Y, h:i a') ?></span>
+                                    <span class="acta-live-datetime"><?= date('d-m-Y, h:i a') ?></span>
                                     <span class="fw-bold">U.E. Josefina Pimentel - Sistema Administrativo</span>
                                 </div>
                                 <div class="acta-digital-header text-center">
@@ -604,7 +604,7 @@ $csrfToken = Security::generateCSRFToken();
                 ?>
                 <div class="sheet-container acta-sheet-container <?= !$esPrimera ? 'acta-page-continuacion' : '' ?>">
                     <div class="acta-print-top-bar d-flex justify-content-between align-items-center">
-                        <span class="printDirectFechaHora"><?= date('d/m/Y, h:i a') ?></span>
+                        <span class="printDirectFechaHora"><?= date('d-m-Y, h:i a') ?></span>
                         <span class="fw-bold">U.E. Josefina Pimentel - Sistema Administrativo</span>
                     </div>
 
@@ -640,7 +640,7 @@ $csrfToken = Security::generateCSRFToken();
                                     <?php
                                     $num = sprintf('%02d', intval($est['orden'] ?? ($idx + 1)));
                                     $fnRaw = (string)($est['fecha_nacimiento'] ?? '');
-                                    $ts = $fnRaw !== '' ? strtotime($fnRaw) : false;
+                                    $ts = ($fnRaw !== '' && $fnRaw !== '0000-00-00') ? strtotime($fnRaw) : false;
                                     $dia = $ts ? date('d', $ts) : '';
                                     $mes = $ts ? date('m', $ts) : '';
                                     $anioFormato = intval($est['anio_formato'] ?? 2);
@@ -674,7 +674,7 @@ $csrfToken = Security::generateCSRFToken();
         <div id="printDirectImagenWrap" class="d-none text-center">
             <div class="sheet-container acta-sheet-container">
                 <div class="acta-print-top-bar d-flex justify-content-between align-items-center">
-                    <span class="printDirectFechaHora"><?= date('d/m/Y, h:i a') ?></span>
+                    <span class="printDirectFechaHora"><?= date('d-m-Y, h:i a') ?></span>
                     <span class="fw-bold">U.E. Josefina Pimentel - Sistema Administrativo</span>
                 </div>
                 <div class="acta-book-print-box text-center mt-3">

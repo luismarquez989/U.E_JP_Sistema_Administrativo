@@ -12,11 +12,47 @@ class UserModel {
 
     /* Trae todos los usuarios y calcula los segundos desde su ultima conexion */
     public function getAll(): array {
-        $sql = "SELECT id, nacionalidad, cedula, nombres_completos, rol, activo, ultima_actividad,
-                (TIMESTAMPDIFF(SECOND, ultima_actividad, NOW())) AS segundos_inactivo
+        $sql = "SELECT id, nacionalidad, cedula, nombres_completos, rol, activo, ultima_actividad
                 FROM usuarios ORDER BY id DESC";
         $stmt = $this->db->query($sql);
-        return $stmt ? ($stmt->fetchAll() ?: []) : [];
+        $rows = $stmt ? ($stmt->fetchAll() ?: []) : [];
+
+        $ahoraTs = time();
+        $idsExpirados = [];
+
+        foreach ($rows as &$row) {
+            $ultima = $row['ultima_actividad'] ?? null;
+            if (!empty($ultima)) {
+                $ultimaTs = strtotime((string)$ultima);
+                if ($ultimaTs !== false) {
+                    $diff = $ahoraTs - $ultimaTs;
+                    if ($diff >= -5 && $diff <= 45) {
+                        $row['segundos_inactivo'] = max(0, $diff);
+                    } else {
+                        $row['segundos_inactivo'] = null;
+                        $row['ultima_actividad'] = null;
+                        $idsExpirados[] = (int)$row['id'];
+                    }
+                } else {
+                    $row['segundos_inactivo'] = null;
+                }
+            } else {
+                $row['segundos_inactivo'] = null;
+            }
+        }
+        unset($row);
+
+        // Limpiar en base de datos las sesiones que ya expiraron por inactividad
+        if (!empty($idsExpirados)) {
+            try {
+                $placeholders = implode(',', array_fill(0, count($idsExpirados), '?'));
+                $cleanStmt = $this->db->prepare("UPDATE usuarios SET ultima_actividad = NULL WHERE id IN ({$placeholders})");
+                $cleanStmt->execute($idsExpirados);
+            } catch (PDOException) {
+            }
+        }
+
+        return $rows;
     }
 
     public function findById(int $id): array|false {
@@ -39,7 +75,8 @@ class UserModel {
     }
 
     public function create(array $data): int {
-        $stmt = $this->db->prepare("INSERT INTO usuarios (nacionalidad, cedula, nombres_completos, password, rol, activo, debe_cambiar_clave) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $ahora = date('Y-m-d H:i:s');
+        $stmt = $this->db->prepare("INSERT INTO usuarios (nacionalidad, cedula, nombres_completos, password, rol, activo, debe_cambiar_clave, creado_en) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt->execute([
             $data['nacionalidad'] ?? 'V',
             $data['cedula'],
@@ -47,7 +84,8 @@ class UserModel {
             $data['password'],
             $data['rol'] ?? 'regular',
             $data['activo'] ?? 1,
-            $data['debe_cambiar_clave'] ?? 0
+            $data['debe_cambiar_clave'] ?? 0,
+            $ahora
         ]);
         return (int)$this->db->lastInsertId();
     }
@@ -81,8 +119,9 @@ class UserModel {
     }
 
     public function updateLastActivity(int $userId): void {
-        $stmt = $this->db->prepare("UPDATE usuarios SET ultima_actividad = NOW() WHERE id = ?");
-        $stmt->execute([$userId]);
+        $ahora = date('Y-m-d H:i:s');
+        $stmt = $this->db->prepare("UPDATE usuarios SET ultima_actividad = ? WHERE id = ?");
+        $stmt->execute([$ahora, $userId]);
     }
 
     public function clearLastActivity(int $userId): void {

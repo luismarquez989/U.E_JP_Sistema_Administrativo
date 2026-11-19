@@ -62,7 +62,11 @@ $orden = $orden ?? 'desc';
                         <td class="text-nowrap audit-cell-fecha">
                             <span class="d-inline-flex align-items-center">
                                 <i class="bi bi-clock me-1 text-muted d-lg-none"></i>
-                                <?= Security::sanitize((string)($log['fecha'] ?? 'N/A')) ?>
+                                <?php
+                                $fechaRaw = (string)($log['fecha'] ?? '');
+                                $fechaTs = !empty($fechaRaw) ? strtotime($fechaRaw) : false;
+                                echo Security::sanitize($fechaTs ? date('d-m-Y H:i:s', $fechaTs) : ($fechaRaw ?: 'N/A'));
+                                ?>
                             </span>
                         </td>
                         <td class="audit-cell-user">

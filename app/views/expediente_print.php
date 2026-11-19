@@ -42,6 +42,7 @@ if ($cleanTitle === '') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= Security::sanitize($cleanTitle) ?> - <?= Security::sanitize($nombreCompleto) ?></title>
+    <link rel="icon" type="image/jpeg" href="<?= BASE_URL ?>/assets/img/photo.jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="<?= BASE_URL ?>/assets/css/style.css?v=<?= time() ?>" rel="stylesheet">
@@ -70,7 +71,7 @@ if ($cleanTitle === '') {
          data-pdf-filename="<?= htmlspecialchars($cleanTitle, ENT_QUOTES, 'UTF-8') ?>.pdf">
 
         <div class="header-print d-flex justify-content-between align-items-center">
-            <span id="fechaHoraActual"><?= date('d/m/Y, h:i a') ?></span>
+            <span id="fechaHoraActual"><?= date('d-m-Y, h:i a') ?></span>
             <span class="fw-bold">U.E. Josefina Pimentel - Sistema Administrativo</span>
         </div>
 
@@ -132,12 +133,12 @@ if ($cleanTitle === '') {
         <div class="footer-vencimiento text-dark">
             <div>
                 <i class="bi bi-calendar-event me-1"></i>Fecha de Registro en Sistema:
-                <strong><?= date('d/m/Y', strtotime($exp['creado_en'] ?? 'now')) ?></strong>
+                <strong><?= date('d-m-Y', strtotime($exp['creado_en'] ?? 'now')) ?></strong>
             </div>
             <?php if ($hasExpiration): ?>
                 <div class="mt-1">
                     <i class="bi bi-hourglass-split me-1"></i>Fecha de Vencimiento:
-                    <strong><?= date('d/m/Y', strtotime($exp['fecha_vencimiento'])) ?></strong>
+                    <strong><?= date('d-m-Y', strtotime($exp['fecha_vencimiento'])) ?></strong>
                 </div>
             <?php endif; ?>
         </div>

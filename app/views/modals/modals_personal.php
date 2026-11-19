@@ -128,7 +128,13 @@ $csrfToken = Security::generateCSRFToken();
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Fecha Nacimiento (*)</label>
-                        <input type="date" name="fecha_nacimiento" class="form-control" required autocomplete="off">
+                        <div class="input-group position-relative">
+                            <input type="text" inputmode="numeric" name="fecha_nacimiento" class="form-control input-fecha-dmy" required maxlength="10" placeholder="DD-MM-AAAA" pattern="\d{2}-\d{2}-\d{4}" title="Ingrese una fecha válida en formato DD-MM-AAAA" autocomplete="off">
+                            <button type="button" class="btn btn-outline-secondary px-2.5 btn-calendario-dmy" tabindex="-1" title="Abrir calendario">
+                                <i class="bi bi-calendar3"></i>
+                            </button>
+                            <input type="date" class="picker-oculto-dmy" tabindex="-1" aria-hidden="true" autocomplete="off">
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Cargo (*)</label>
@@ -250,7 +256,13 @@ $csrfToken = Security::generateCSRFToken();
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Fecha Nacimiento (*)</label>
-                        <input type="date" name="fecha_nacimiento" id="editPersonalFechaNac" class="form-control" required autocomplete="off">
+                        <div class="input-group position-relative">
+                            <input type="text" inputmode="numeric" name="fecha_nacimiento" id="editPersonalFechaNac" class="form-control input-fecha-dmy" required maxlength="10" placeholder="DD-MM-AAAA" pattern="\d{2}-\d{2}-\d{4}" title="Ingrese una fecha válida en formato DD-MM-AAAA" autocomplete="off">
+                            <button type="button" class="btn btn-outline-secondary px-2.5 btn-calendario-dmy" tabindex="-1" title="Abrir calendario">
+                                <i class="bi bi-calendar3"></i>
+                            </button>
+                            <input type="date" class="picker-oculto-dmy" tabindex="-1" aria-hidden="true" autocomplete="off">
+                        </div>
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-semibold">Cargo (*)</label>
@@ -428,8 +440,14 @@ $csrfToken = Security::generateCSRFToken();
                     <label class="form-label fw-bold text-dark">
                         <i class="bi bi-calendar-check text-primary me-1"></i> Fecha de Vencimiento de este Documento (Opcional)
                     </label>
-                    <input type="date" name="fecha_vencimiento" class="form-control" autocomplete="off">
-                    <div class="form-text">Si indica una fecha, el sistema marcará automáticamente como <strong class="text-danger">VENCIDO</strong> este registro una vez alcanzado el día.</div>
+                    <div class="input-group position-relative">
+                        <input type="text" inputmode="numeric" name="fecha_vencimiento" class="form-control input-fecha-dmy" maxlength="10" placeholder="DD-MM-AAAA" pattern="\d{2}-\d{2}-\d{4}" title="Ingrese una fecha válida en formato DD-MM-AAAA" autocomplete="off">
+                        <button type="button" class="btn btn-outline-secondary px-3 btn-calendario-dmy" tabindex="-1" title="Abrir calendario">
+                            <i class="bi bi-calendar3"></i>
+                        </button>
+                        <input type="date" class="picker-oculto-dmy" tabindex="-1" aria-hidden="true" autocomplete="off">
+                    </div>
+                    <div class="form-text">Si indica una fecha (DD-MM-AAAA), el sistema marcará automáticamente como <strong class="text-danger">VENCIDO</strong> este registro una vez alcanzado el día.</div>
                 </div>
 
             </div>
@@ -489,7 +507,13 @@ $csrfToken = Security::generateCSRFToken();
                     <label class="form-label fw-bold text-dark">
                         <i class="bi bi-calendar-check text-primary me-1"></i> Fecha de Vencimiento
                     </label>
-                    <input type="date" name="fecha_vencimiento" id="editExpFechaVencimiento" class="form-control" autocomplete="off">
+                    <div class="input-group position-relative">
+                        <input type="text" inputmode="numeric" name="fecha_vencimiento" id="editExpFechaVencimiento" class="form-control input-fecha-dmy" maxlength="10" placeholder="DD-MM-AAAA" pattern="\d{2}-\d{2}-\d{4}" title="Ingrese una fecha válida en formato DD-MM-AAAA" autocomplete="off">
+                        <button type="button" class="btn btn-outline-secondary px-3 btn-calendario-dmy" tabindex="-1" title="Abrir calendario">
+                            <i class="bi bi-calendar3"></i>
+                        </button>
+                        <input type="date" class="picker-oculto-dmy" tabindex="-1" aria-hidden="true" autocomplete="off">
+                    </div>
                 </div>
 
             </div>
@@ -605,7 +629,7 @@ $csrfToken = Security::generateCSRFToken();
 <!-- Contenedor exclusivo para impresion directa del expediente -->
 <div id="documentoImpresionExpediente" class="sheet-container print-sheet-expediente">
     <div class="header-print d-flex justify-content-between align-items-center">
-        <span id="printHeaderTimestamp"><?= date('d/m/Y, h:i a') ?></span>
+        <span id="printHeaderTimestamp"><?= date('d-m-Y, h:i a') ?></span>
         <span class="fw-bold">U.E. Josefina Pimentel - Sistema Administrativo</span>
     </div>
 
@@ -613,7 +637,7 @@ $csrfToken = Security::generateCSRFToken();
         <div class="row align-items-center g-3">
             <div class="col-auto text-center">
                 <?php if (!empty($selected['foto'])): ?>
-                    <img src="<?= BASE_URL ?>/personal/downloadFile?foto_id=<?= $selected['id'] ?>" alt="Foto" class="rounded-circle border print-doc-profile-avatar-img" width="58" height="58">
+                    <img src="<?= BASE_URL ?>/personal/downloadFile?foto_id=<?= $selected['id'] ?>&size=thumb" alt="Foto" class="rounded-circle border print-doc-profile-avatar-img" width="58" height="58" loading="lazy" decoding="async">
                 <?php else: ?>
                     <div class="rounded-circle bg-white text-dark border d-flex align-items-center justify-content-center fw-bold print-doc-profile-avatar-placeholder">
                         <?= strtoupper(substr($selected['nombres'] ?? 'P', 0, 1) . substr($selected['apellidos'] ?? '', 0, 1)) ?>

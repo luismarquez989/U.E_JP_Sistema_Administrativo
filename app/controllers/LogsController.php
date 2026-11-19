@@ -36,9 +36,13 @@ class LogsController extends Controller {
                 'periodo' => $periodo,
                 'orden'   => $orden,
                 'logs'    => array_map(function (array $l): array {
+                    $fechaRaw = (string)($l['fecha'] ?? '');
+                    $fechaTs = !empty($fechaRaw) ? strtotime($fechaRaw) : false;
+                    $fechaFmt = $fechaTs ? date('d-m-Y H:i:s', $fechaTs) : ($fechaRaw ?: 'N/A');
+
                     return [
                         'id'             => $l['id'] ?? 0,
-                        'fecha'          => $l['fecha'] ?? 'N/A',
+                        'fecha'          => $fechaFmt,
                         'nombres'        => $l['usuario_nombre'] ?? 'Sistema',
                         'usuario_nombre' => $l['usuario_nombre'] ?? 'Sistema',
                         'accion'         => $l['accion'] ?? '',
